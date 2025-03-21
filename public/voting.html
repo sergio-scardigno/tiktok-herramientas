@@ -8,136 +8,358 @@
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
             rel="stylesheet"
         />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
         <style>
             body {
                 background-color: transparent;
                 font-family: 'Poppins', sans-serif;
+                overflow: visible;
+                margin: 0;
+                padding: 0;
+                width: 350px;
+                height: 650px;
+                position: relative;
+            }
+
+            .container-fluid {
+                width: 350px;
+                height: 600px;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                margin: 0;
+                padding: 0;
+                overflow: visible;
+            }
+
+            .main-content {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 10px 5px;
+                max-height: 580px;
+                overflow: visible;
+            }
+
+            /* Card styles */
+            .custom-card {
+                background-color: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(10px);
+                border-radius: 15px;
+                border: 1px solid rgba(255, 255, 255, 0.18);
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+                margin-bottom: 10px;
+            }
+
+            /* Vote options styling */
+            .vote-options {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 5px;
             }
 
             .vote-box {
-                transition: all 0.3s ease;
+                border-radius: 12px;
+                padding: 6px;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                position: relative;
+                overflow: hidden;
+                max-width: 280px;
+                margin: 0 auto;
+                min-height: auto;
             }
 
             .vote-box:hover {
-                transform: scale(1.03);
+                transform: translateY(-5px) scale(1.02);
             }
 
+            .vote-box.like-box {
+                background: linear-gradient(
+                    135deg,
+                    rgba(255, 0, 128, 0.3),
+                    rgba(255, 0, 0, 0.2)
+                );
+                border: 1px solid rgba(255, 0, 128, 0.5);
+            }
+
+            .vote-box.comment-box {
+                background: linear-gradient(
+                    135deg,
+                    rgba(0, 200, 255, 0.3),
+                    rgba(0, 100, 255, 0.2)
+                );
+                border: 1px solid rgba(0, 200, 255, 0.5);
+            }
+
+            .vote-icon {
+                font-size: 2.2rem;
+                margin-bottom: 8px;
+                filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+            }
+
+            .vote-count {
+                font-size: 2.8rem;
+                font-weight: 700;
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+            }
+
+            /* Timer bar with animated gradient */
             #timerBar {
-                height: 6px;
+                height: 8px;
+                border-radius: 4px;
+                background: linear-gradient(90deg, #ff0084, #33ccff);
+                background-size: 200% 200%;
+                animation: gradientShift 2s linear infinite;
                 transition: width 1s linear;
             }
 
-            .voters-list {
-                max-height: 100px;
+            @keyframes gradientShift {
+                0% {
+                    background-position: 0% 50%;
+                }
+                50% {
+                    background-position: 100% 50%;
+                }
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            /* Recent activity section - MODIFICADO PARA HACERLO MÁS ALTO */
+            .activity-section {
+                max-height: 200px; /* Aumentado de 120px a 200px */
+                margin-top: 10px;
+            }
+
+            .recent-activity {
+                max-height: 160px; /* Aumentado de 80px a 160px */
                 overflow-y: auto;
+                padding: 5px;
+            }
+
+            /* Activity items */
+            .activity-item {
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                padding: 6px 8px;
+                margin-bottom: 5px;
+                font-size: 0.8rem;
+                display: flex;
+                align-items: center;
+            }
+
+            .activity-icon {
+                margin-right: 8px;
+            }
+
+            /* Voter lists */
+            .voters-list {
+                max-height: 40px;
+                overflow-y: auto;
+                padding: 2px;
+                margin-top: 2px;
+                width: 95%;
+            }
+
+            .voter-item {
+                padding: 1px 4px;
+                border-radius: 4px;
+                margin-bottom: 2px;
+                font-size: 0.75rem;
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+            /* Last voter highlight */
+            .last-voter {
+                font-size: 0.9rem;
+                padding: 5px 8px;
+                margin: 5px 0;
+                background-color: rgba(255, 255, 255, 0.15);
+                border-radius: 10px;
+                text-align: center;
+            }
+
+            /* Customize scrollbar */
+            ::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 10px;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 10px;
+            }
+
+            /* Results animation */
+            .result-winner {
+                animation: pulseWinner 2s infinite;
+            }
+
+            @keyframes pulseWinner {
+                0% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.05);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            /* Fixed size adjustments */
+            @media screen {
+                .main-content {
+                    padding: 5px;
+                }
+
+                .vote-options {
+                    gap: 8px;
+                }
+
+                .vote-count {
+                    font-size: 1.8rem;
+                    margin: 2px 0;
+                }
+
+                h2 {
+                    font-size: 1.3rem;
+                    margin-bottom: 8px;
+                }
+
+                h5 {
+                    font-size: 0.9rem;
+                    margin-bottom: 5px;
+                }
+
+                .vote-icon {
+                    font-size: 1.5rem;
+                    margin-bottom: 4px;
+                }
+
+                p {
+                    margin-bottom: 0.5rem;
+                }
+
+                .custom-card {
+                    padding: 10px;
+                }
             }
         </style>
     </head>
-    <body class="bg-transparent">
-        <div class="container-fluid vh-100">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <!-- Voting Card -->
-                    <div
-                        id="votingCard"
-                        class="card bg-dark bg-opacity-75 my-3 shadow d-none"
+    <body class="bg-transparent text-white">
+        <!-- Wrapper with fixed dimensions -->
+        <div class="container-fluid">
+            <div class="main-content">
+                <!-- Voting Card -->
+                <div id="votingCard" class="custom-card p-3 d-none">
+                    <h2
+                        id="votingTitleDisplay"
+                        class="text-center mb-2 fw-bold"
                     >
-                        <div class="card-body text-center p-4">
-                            <h2 id="votingTitleDisplay" class="text-white mb-3">
-                                ¿Qué decisión tomar?
-                            </h2>
+                        ¿Qué decisión tomar?
+                    </h2>
 
-                            <!-- Timer Bar -->
-                            <div class="progress mb-4">
-                                <div
-                                    id="timerBar"
-                                    class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
-                                    style="width: 100%"
-                                ></div>
-                            </div>
-
-                            <!-- Voting Options -->
-                            <div class="row mb-4">
-                                <!-- Like Option -->
-                                <div class="col-6">
-                                    <div
-                                        class="vote-box bg-danger bg-opacity-25 p-3 rounded h-100 d-flex flex-column align-items-center"
-                                    >
-                                        <div class="fs-2 mb-2">❤️</div>
-                                        <div
-                                            id="likeOptionDisplay"
-                                            class="fw-bold mb-3 text-white text-center"
-                                        >
-                                            Opción A
-                                        </div>
-                                        <div
-                                            id="likeCount"
-                                            class="fs-1 fw-bold text-white"
-                                        >
-                                            0
-                                        </div>
-                                        <div
-                                            id="likeVoters"
-                                            class="small text-white text-center voters-list"
-                                        ></div>
-                                    </div>
-                                </div>
-
-                                <!-- Comment Option -->
-                                <div class="col-6">
-                                    <div
-                                        class="vote-box bg-info bg-opacity-25 p-3 rounded h-100 d-flex flex-column align-items-center"
-                                    >
-                                        <div class="fs-2 mb-2">💬</div>
-                                        <div
-                                            id="commentOptionDisplay"
-                                            class="fw-bold mb-3 text-white text-center"
-                                        >
-                                            Opción B
-                                        </div>
-                                        <div
-                                            id="commentCount"
-                                            class="fs-1 fw-bold text-white"
-                                        >
-                                            0
-                                        </div>
-                                        <div
-                                            id="commentVoters"
-                                            class="small text-white text-center voters-list"
-                                        ></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Timer Bar -->
+                    <div class="progress mb-3 bg-dark">
+                        <div
+                            id="timerBar"
+                            class="progress-bar"
+                            style="width: 100%"
+                        ></div>
                     </div>
 
-                    <!-- Result Card -->
-                    <div
-                        id="resultCard"
-                        class="card bg-dark bg-opacity-75 my-3 shadow d-none"
-                    >
-                        <div class="card-body text-center p-4">
-                            <h2 class="text-white mb-4">Resultado</h2>
+                    <!-- Last Voter -->
+                    <div id="lastVoter" class="last-voter mb-2">
+                        <span id="lastVoterName">Nadie ha votado aún</span>
+                    </div>
+
+                    <!-- Voting Options -->
+                    <div class="vote-options">
+                        <!-- Like Option -->
+                        <div
+                            class="vote-box like-box d-flex flex-column align-items-center"
+                        >
                             <div
-                                id="resultMessage"
-                                class="fs-3 text-white mb-3"
+                                class="d-flex align-items-center justify-content-center"
+                            >
+                                <div class="vote-icon me-2">❤️</div>
+                                <div id="likeCount" class="vote-count">0</div>
+                            </div>
+                            <div
+                                id="likeOptionDisplay"
+                                class="fw-bold my-1 text-center small"
+                            >
+                                Opción A
+                            </div>
+                            <div
+                                id="likeVoters"
+                                class="voters-list w-100"
+                            ></div>
+                        </div>
+
+                        <!-- Comment Option -->
+                        <div
+                            class="vote-box comment-box d-flex flex-column align-items-center"
+                        >
+                            <div
+                                class="d-flex align-items-center justify-content-center"
+                            >
+                                <div class="vote-icon me-2">💬</div>
+                                <div id="commentCount" class="vote-count">
+                                    0
+                                </div>
+                            </div>
+                            <div
+                                id="commentOptionDisplay"
+                                class="fw-bold my-1 text-center small"
+                            >
+                                Opción B
+                            </div>
+                            <div
+                                id="commentVoters"
+                                class="voters-list w-100"
                             ></div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Waiting Card -->
+                <!-- Result Card -->
+                <div id="resultCard" class="custom-card p-3 d-none">
+                    <h2 class="text-center mb-2 fw-bold">Resultado</h2>
                     <div
-                        id="waitingCard"
-                        class="card bg-dark bg-opacity-75 my-3 shadow"
-                    >
-                        <div class="card-body text-center p-4">
-                            <h2 class="text-white mb-4">
-                                Esperando votación...
-                            </h2>
-                            <p class="text-white-50">
-                                Los espectadores podrán votar mediante likes y
-                                comentarios
-                            </p>
+                        id="resultMessage"
+                        class="fs-4 text-center mb-2 result-winner"
+                    ></div>
+                </div>
+
+                <!-- Waiting Card -->
+                <div id="waitingCard" class="custom-card p-3">
+                    <h2 class="text-center mb-2 fw-bold">
+                        Esperando votación...
+                    </h2>
+                    <p class="text-center text-white-50 small">
+                        Los espectadores podrán votar mediante likes y
+                        comentarios
+                    </p>
+                </div>
+
+                <!-- Activity Section - MODIFICADO -->
+                <div class="activity-section custom-card p-2">
+                    <h5 class="text-center mb-1">Actividad Reciente</h5>
+                    <div id="recentActivity" class="recent-activity">
+                        <div class="activity-item">
+                            <span class="activity-icon">📣</span>
+                            <span>Esperando actividad...</span>
                         </div>
                     </div>
                 </div>
@@ -155,6 +377,8 @@
             const waitingCard = document.getElementById('waitingCard');
             const resultCard = document.getElementById('resultCard');
             const resultMessage = document.getElementById('resultMessage');
+            const lastVoter = document.getElementById('lastVoterName');
+            const recentActivity = document.getElementById('recentActivity');
 
             const votingTitleDisplay =
                 document.getElementById('votingTitleDisplay');
@@ -172,6 +396,42 @@
             let timerId = null;
             let startTime = null;
             let duration = 30;
+            let recentActivityList = [];
+
+            // Modificado: Aumentar el número de actividades mostradas
+            function addActivity(text, icon = '📣') {
+                const activityItem = `
+                <div class="activity-item">
+                    <span class="activity-icon">${icon}</span>
+                    <span>${text}</span>
+                </div>
+            `;
+
+                recentActivityList.unshift(activityItem);
+                // Aumentado de 5 a 10 para mostrar más actividades
+                if (recentActivityList.length > 10) {
+                    recentActivityList.pop();
+                }
+
+                recentActivity.innerHTML = recentActivityList.join('');
+            }
+
+            function createVoterElements(voters, container) {
+                if (!voters || Object.keys(voters).length === 0) {
+                    container.innerHTML =
+                        '<div class="voter-item small">Nadie ha votado</div>';
+                    return;
+                }
+
+                // Limitar a mostrar solo los 3 últimos votantes para ahorrar espacio
+                const limitedVoters = Object.entries(voters).slice(-3);
+                container.innerHTML = limitedVoters
+                    .map(
+                        ([user, count]) =>
+                            `<div class="voter-item">${user} (${count})</div>`
+                    )
+                    .join('');
+            }
 
             // Game state update
             socket.on('gameState', (gameState) => {
@@ -193,23 +453,53 @@
                     commentCount.textContent = gameState.currentVoting.comments;
 
                     // Update voters lists
-                    likeVoters.innerHTML =
-                        Object.entries(
-                            gameState.currentVoting.likesVoters || {}
-                        )
-                            .map(([user, count]) => `${user} (${count}❤️)`)
-                            .join('<br>') || 'Nadie ha votado';
+                    createVoterElements(
+                        gameState.currentVoting.likesVoters,
+                        likeVoters
+                    );
+                    createVoterElements(
+                        gameState.currentVoting.commentsVoters,
+                        commentVoters
+                    );
 
-                    commentVoters.innerHTML =
-                        Object.entries(
-                            gameState.currentVoting.commentsVoters || {}
-                        )
-                            .map(([user, count]) => `${user} (${count}💬)`)
-                            .join('<br>') || 'Nadie ha votado';
+                    // Update last voter
+                    const lastLikeVoter = Object.keys(
+                        gameState.currentVoting.likesVoters || {}
+                    ).pop();
+                    const lastCommentVoter = Object.keys(
+                        gameState.currentVoting.commentsVoters || {}
+                    ).pop();
+
+                    if (lastLikeVoter && lastCommentVoter) {
+                        // Compare timestamps if available, otherwise use the last added
+                        lastVoter.innerHTML = `Último voto: <strong>${lastLikeVoter}</strong> ❤️`;
+                        addActivity(
+                            `${lastLikeVoter} votó por "${gameState.currentVoting.likeOption}"`,
+                            '❤️'
+                        );
+                    } else if (lastLikeVoter) {
+                        lastVoter.innerHTML = `Último voto: <strong>${lastLikeVoter}</strong> ❤️`;
+                        addActivity(
+                            `${lastLikeVoter} votó por "${gameState.currentVoting.likeOption}"`,
+                            '❤️'
+                        );
+                    } else if (lastCommentVoter) {
+                        lastVoter.innerHTML = `Último voto: <strong>${lastCommentVoter}</strong> 💬`;
+                        addActivity(
+                            `${lastCommentVoter} votó por "${gameState.currentVoting.commentOption}"`,
+                            '💬'
+                        );
+                    } else {
+                        lastVoter.textContent = 'Nadie ha votado aún';
+                    }
 
                     // Start timer if not already running
                     if (!timerId) {
                         startTimer(gameState.votingDuration || 30);
+                        addActivity(
+                            `¡Nueva votación iniciada! "${gameState.currentVoting.title}"`,
+                            '🎮'
+                        );
                     }
                 } else {
                     // Reset timer
@@ -229,35 +519,46 @@
                     } else {
                         // Show result card if voting ended
                         let resultText = '';
+                        let resultIcon = '';
+
                         if (
                             gameState.currentVoting.likes >
                             gameState.currentVoting.comments
                         ) {
                             resultText = `¡Gana "${gameState.currentVoting.likeOption}" con ${gameState.currentVoting.likes} votos!`;
+                            resultIcon = '❤️';
                         } else if (
                             gameState.currentVoting.comments >
                             gameState.currentVoting.likes
                         ) {
                             resultText = `¡Gana "${gameState.currentVoting.commentOption}" con ${gameState.currentVoting.comments} votos!`;
+                            resultIcon = '💬';
                         } else if (
                             gameState.currentVoting.likes === 0 &&
                             gameState.currentVoting.comments === 0
                         ) {
                             resultText = 'No se recibieron votos';
+                            resultIcon = '😶';
                         } else {
                             resultText = `¡Empate! ${gameState.currentVoting.likes} a ${gameState.currentVoting.comments}`;
+                            resultIcon = '🤝';
                         }
 
-                        resultMessage.textContent = resultText;
+                        addActivity(`Resultado: ${resultText}`, resultIcon);
+                        resultMessage.innerHTML = `${resultIcon} ${resultText}`;
                         votingCard.classList.add('d-none');
                         waitingCard.classList.add('d-none');
                         resultCard.classList.remove('d-none');
 
-                        // Auto-hide result after 10 seconds
+                        <!-- Auto-hide result after 10 seconds -->
                         setTimeout(() => {
                             if (!gameState.votingActive) {
                                 resultCard.classList.add('d-none');
                                 waitingCard.classList.remove('d-none');
+                                addActivity(
+                                    'Esperando nueva votación...',
+                                    '⏱️'
+                                );
                             }
                         }, 10000);
                     }
@@ -289,12 +590,32 @@
                     } else {
                         const percentage = (remaining / duration) * 100;
                         timerBar.style.width = `${percentage}%`;
+
+                        // Add warning class when time is running out
+                        if (remaining <= 5) {
+                            timerBar.classList.add('bg-danger');
+                            timerBar.style.animation =
+                                'gradientShift 0.5s linear infinite';
+                        }
                     }
                 }, 1000);
             }
 
+            // Socket event for new vote
+            socket.on('newVote', (data) => {
+                const voteType = data.type === 'like' ? '❤️' : '💬';
+                const option =
+                    data.type === 'like'
+                        ? likeOptionDisplay.textContent
+                        : commentOptionDisplay.textContent;
+
+                lastVoter.innerHTML = `Último voto: <strong>${data.user}</strong> ${voteType}`;
+                addActivity(`${data.user} votó por "${option}"`, voteType);
+            });
+
             // Request initial game state
             socket.emit('getGameState');
+            addActivity('Aplicación iniciada', '🚀');
         </script>
     </body>
 </html>

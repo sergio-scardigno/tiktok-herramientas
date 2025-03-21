@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TikTok Decision Maker</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            body {
+                background-color: transparent;
+                font-family: 'Poppins', sans-serif;
+            }
+
+            .vote-box {
+                transition: all 0.3s ease;
+            }
+
+            .vote-box:hover {
+                transform: scale(1.03);
+            }
+
+            #timerBar {
+                height: 6px;
+                transition: width 1s linear;
+            }
+
+            .voters-list {
+                max-height: 100px;
+                overflow-y: auto;
+            }
+        </style>
+    </head>
+    <body class="bg-transparent">
+        <div class="container-fluid vh-100">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <!-- Voting Card -->
+                    <div
+                        id="votingCard"
+                        class="card bg-dark bg-opacity-75 my-3 shadow d-none"
+                    >
+                        <div class="card-body text-center p-4">
+                            <h2 id="votingTitleDisplay" class="text-white mb-3">
+                                ¿Qué decisión tomar?
+                            </h2>
+
+                            <!-- Timer Bar -->
+                            <div class="progress mb-4">
+                                <div
+                                    id="timerBar"
+                                    class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+                                    style="width: 100%"
+                                ></div>
+                            </div>
+
+                            <!-- Voting Options -->
+                            <div class="row mb-4">
+                                <!-- Like Option -->
+                                <div class="col-6">
+                                    <div
+                                        class="vote-box bg-danger bg-opacity-25 p-3 rounded h-100 d-flex flex-column align-items-center"
+                                    >
+                                        <div class="fs-2 mb-2">❤️</div>
+                                        <div
+                                            id="likeOptionDisplay"
+                                            class="fw-bold mb-3 text-white text-center"
+                                        >
+                                            Opción A
+                                        </div>
+                                        <div
+                                            id="likeCount"
+                                            class="fs-1 fw-bold text-white"
+                                        >
+                                            0
+                                        </div>
+                                        <div
+                                            id="likeVoters"
+                                            class="small text-white text-center voters-list"
+                                        ></div>
+                                    </div>
+                                </div>
+
+                                <!-- Comment Option -->
+                                <div class="col-6">
+                                    <div
+                                        class="vote-box bg-info bg-opacity-25 p-3 rounded h-100 d-flex flex-column align-items-center"
+                                    >
+                                        <div class="fs-2 mb-2">💬</div>
+                                        <div
+                                            id="commentOptionDisplay"
+                                            class="fw-bold mb-3 text-white text-center"
+                                        >
+                                            Opción B
+                                        </div>
+                                        <div
+                                            id="commentCount"
+                                            class="fs-1 fw-bold text-white"
+                                        >
+                                            0
+                                        </div>
+                                        <div
+                                            id="commentVoters"
+                                            class="small text-white text-center voters-list"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result Card -->
+                    <div
+                        id="resultCard"
+                        class="card bg-dark bg-opacity-75 my-3 shadow d-none"
+                    >
+                        <div class="card-body text-center p-4">
+                            <h2 class="text-white mb-4">Resultado</h2>
+                            <div
+                                id="resultMessage"
+                                class="fs-3 text-white mb-3"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <!-- Waiting Card -->
+                    <div
+                        id="waitingCard"
+                        class="card bg-dark bg-opacity-75 my-3 shadow"
+                    >
+                        <div class="card-body text-center p-4">
+                            <h2 class="text-white mb-4">
+                                Esperando votación...
+                            </h2>
+                            <p class="text-white-50">
+                                Los espectadores podrán votar mediante likes y
+                                comentarios
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript -->
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            // Socket connection
+            const socket = io();
+
+            // DOM elements
+            const votingCard = document.getElementById('votingCard');
+            const waitingCard = document.getElementById('waitingCard');
+            const resultCard = document.getElementById('resultCard');
+            const resultMessage = document.getElementById('resultMessage');
+
+            const votingTitleDisplay =
+                document.getElementById('votingTitleDisplay');
+            const likeOptionDisplay =
+                document.getElementById('likeOptionDisplay');
+            const commentOptionDisplay = document.getElementById(
+                'commentOptionDisplay'
+            );
+            const likeCount = document.getElementById('likeCount');
+            const commentCount = document.getElementById('commentCount');
+            const likeVoters = document.getElementById('likeVoters');
+            const commentVoters = document.getElementById('commentVoters');
+            const timerBar = document.getElementById('timerBar');
+
+            let timerId = null;
+            let startTime = null;
+            let duration = 30;
+
+            // Game state update
+            socket.on('gameState', (gameState) => {
+                // Update display based on voting state
+                if (gameState.votingActive && gameState.currentVoting) {
+                    // Show voting card, hide others
+                    votingCard.classList.remove('d-none');
+                    waitingCard.classList.add('d-none');
+                    resultCard.classList.add('d-none');
+
+                    // Update voting content
+                    votingTitleDisplay.textContent =
+                        gameState.currentVoting.title;
+                    likeOptionDisplay.textContent =
+                        gameState.currentVoting.likeOption;
+                    commentOptionDisplay.textContent =
+                        gameState.currentVoting.commentOption;
+                    likeCount.textContent = gameState.currentVoting.likes;
+                    commentCount.textContent = gameState.currentVoting.comments;
+
+                    // Update voters lists
+                    likeVoters.innerHTML =
+                        Object.entries(
+                            gameState.currentVoting.likesVoters || {}
+                        )
+                            .map(([user, count]) => `${user} (${count}❤️)`)
+                            .join('<br>') || 'Nadie ha votado';
+
+                    commentVoters.innerHTML =
+                        Object.entries(
+                            gameState.currentVoting.commentsVoters || {}
+                        )
+                            .map(([user, count]) => `${user} (${count}💬)`)
+                            .join('<br>') || 'Nadie ha votado';
+
+                    // Start timer if not already running
+                    if (!timerId) {
+                        startTimer(gameState.votingDuration || 30);
+                    }
+                } else {
+                    // Reset timer
+                    if (timerId) {
+                        clearInterval(timerId);
+                        timerId = null;
+                    }
+
+                    // Show waiting card if no active voting
+                    if (
+                        !gameState.currentVoting ||
+                        !gameState.currentVoting.id
+                    ) {
+                        votingCard.classList.add('d-none');
+                        resultCard.classList.add('d-none');
+                        waitingCard.classList.remove('d-none');
+                    } else {
+                        // Show result card if voting ended
+                        let resultText = '';
+                        if (
+                            gameState.currentVoting.likes >
+                            gameState.currentVoting.comments
+                        ) {
+                            resultText = `¡Gana "${gameState.currentVoting.likeOption}" con ${gameState.currentVoting.likes} votos!`;
+                        } else if (
+                            gameState.currentVoting.comments >
+                            gameState.currentVoting.likes
+                        ) {
+                            resultText = `¡Gana "${gameState.currentVoting.commentOption}" con ${gameState.currentVoting.comments} votos!`;
+                        } else if (
+                            gameState.currentVoting.likes === 0 &&
+                            gameState.currentVoting.comments === 0
+                        ) {
+                            resultText = 'No se recibieron votos';
+                        } else {
+                            resultText = `¡Empate! ${gameState.currentVoting.likes} a ${gameState.currentVoting.comments}`;
+                        }
+
+                        resultMessage.textContent = resultText;
+                        votingCard.classList.add('d-none');
+                        waitingCard.classList.add('d-none');
+                        resultCard.classList.remove('d-none');
+
+                        // Auto-hide result after 10 seconds
+                        setTimeout(() => {
+                            if (!gameState.votingActive) {
+                                resultCard.classList.add('d-none');
+                                waitingCard.classList.remove('d-none');
+                            }
+                        }, 10000);
+                    }
+                }
+            });
+
+            // Timer function
+            function startTimer(seconds) {
+                duration = seconds;
+                startTime = Date.now();
+
+                // Reset timer bar
+                timerBar.style.width = '100%';
+
+                // Clear any existing timer
+                if (timerId) {
+                    clearInterval(timerId);
+                }
+
+                // Start new timer
+                timerId = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    const remaining = duration - elapsed;
+
+                    if (remaining <= 0) {
+                        clearInterval(timerId);
+                        timerId = null;
+                        timerBar.style.width = '0%';
+                    } else {
+                        const percentage = (remaining / duration) * 100;
+                        timerBar.style.width = `${percentage}%`;
+                    }
+                }, 1000);
+            }
+
+            // Request initial game state
+            socket.emit('getGameState');
+        </script>
+    </body>
+</html>
