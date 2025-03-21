@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TikTok Decision Maker - Configuración</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+        <nav class="navbar navbar-dark bg-dark navbar-expand-lg mb-4">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <span class="me-2">🎮</span> TikTok Decision Maker
+                </a>
+                <div class="ms-auto" id="soundToggle">
+                    <span>Sonidos</span>
+                    <label class="form-check form-switch ms-2 d-inline-block">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            checked
+                            id="soundToggleCheckbox"
+                        />
+                    </label>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mb-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- Panel de control -->
+                    <div class="card mb-3">
+                        <div class="card-header d-flex align-items-center">
+                            <span class="me-2">🗳️</span> Iniciar Votación
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="votingTitle" class="form-label"
+                                    >Título:</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="votingTitle"
+                                    placeholder="¿Qué decisión tomar?"
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label for="likeOption" class="form-label"
+                                    >Opción Likes (❤️):</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="likeOption"
+                                    placeholder="Opción A"
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label for="commentOption" class="form-label"
+                                    >Opción Comentarios (💬):</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="commentOption"
+                                    placeholder="Opción B"
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label for="votingDuration" class="form-label"
+                                    >Duración (segundos):</label
+                                >
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="votingDuration"
+                                    value="30"
+                                    min="5"
+                                    max="300"
+                                />
+                            </div>
+                            <button
+                                class="btn btn-primary w-100"
+                                id="startVotingBtn"
+                            >
+                                Iniciar Votación
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header d-flex align-items-center">
+                            <span class="me-2">📋</span> Votaciones Predefinidas
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="gameSelect" class="form-label"
+                                    >Juego:</label
+                                >
+                                <select class="form-select" id="gameSelect">
+                                    <option value="">Seleccionar juego</option>
+                                    <option value="phasmophobia">
+                                        Phasmophobia
+                                    </option>
+                                    <option value="fortnite">Fortnite</option>
+                                    <option value="custom">
+                                        Personalizado
+                                    </option>
+                                </select>
+                            </div>
+                            <div
+                                class="preset-list list-group"
+                                id="presetOptions"
+                            >
+                                <!-- Aquí se cargarán los presets -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header d-flex align-items-center">
+                            <span class="me-2">⚙️</span> Acciones
+                        </div>
+                        <div class="card-body">
+                            <button
+                                class="btn btn-primary w-100 mb-2"
+                                id="endVotingBtn"
+                            >
+                                Finalizar Votación
+                            </button>
+                            <button
+                                class="btn btn-secondary w-100 mb-2"
+                                id="simToggleBtn"
+                            >
+                                Iniciar Simulación
+                            </button>
+                            <button
+                                class="btn btn-secondary w-100"
+                                id="clearBtn"
+                            >
+                                Limpiar Todo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header d-flex align-items-center">
+                            <span class="me-2">💾</span> Guardar Votación
+                            Personalizada
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="customTitle" class="form-label"
+                                    >Título:</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="customTitle"
+                                    placeholder="Mi votación personalizada"
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label for="customLikeOption" class="form-label"
+                                    >Opción Likes (❤️):</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="customLikeOption"
+                                    placeholder="Mi opción A"
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label
+                                    for="customCommentOption"
+                                    class="form-label"
+                                    >Opción Comentarios (💬):</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="customCommentOption"
+                                    placeholder="Mi opción B"
+                                />
+                            </div>
+                            <button
+                                class="btn btn-primary w-100"
+                                id="saveCustomBtn"
+                            >
+                                Guardar Preset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <!-- Vista previa -->
+                    <div class="card h-100">
+                        <div
+                            class="card-header d-flex justify-content-between align-items-center"
+                        >
+                            <div class="d-flex align-items-center">
+                                <span class="me-2">👁️</span> Vista Previa
+                            </div>
+                            <div>
+                                <button
+                                    class="btn btn-sm btn-secondary me-2"
+                                    id="refreshPreviewBtn"
+                                >
+                                    🔄 Actualizar
+                                </button>
+                                <button
+                                    class="btn btn-sm btn-secondary"
+                                    id="openNewWindowBtn"
+                                >
+                                    🔗 Abrir
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="position-relative">
+                                <iframe
+                                    id="previewFrame"
+                                    class="w-100"
+                                    style="height: 400px"
+                                    src="/"
+                                    frameborder="0"
+                                ></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <!-- Actividad reciente -->
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center">
+                            <span class="me-2">⚡</span> Actividad Reciente
+                        </div>
+                        <div class="card-body">
+                            <div
+                                id="activityList"
+                                style="max-height: 400px; overflow-y: auto"
+                            >
+                                <div
+                                    class="d-flex align-items-center p-2 mb-2 bg-light rounded"
+                                >
+                                    <div class="me-2">⚙️</div>
+                                    <div>Esperando actividad...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="py-3 text-center text-muted bg-dark">
+            <p class="mb-0">TikTok Decision Maker para Juegos © 2025</p>
+        </footer>
+
+        <!-- Sonidos -->
+        <audio
+            id="soundVoteStart"
+            src="sounds/vote-start.mp3"
+            preload="auto"
+        ></audio>
+        <audio
+            id="soundVoteEnd"
+            src="sounds/vote-end.mp3"
+            preload="auto"
+        ></audio>
+        <audio
+            id="soundNewVote"
+            src="sounds/vote-cast.mp3"
+            preload="auto"
+        ></audio>
+        <audio
+            id="soundWinnerLikes"
+            src="sounds/likes-win.mp3"
+            preload="auto"
+        ></audio>
+        <audio
+            id="soundWinnerComments"
+            src="sounds/comments-win.mp3"
+            preload="auto"
+        ></audio>
+        <audio id="soundTie" src="sounds/vote-tie.mp3" preload="auto"></audio>
+
+        <!-- JavaScript -->
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+            const previewFrame = document.getElementById('previewFrame');
+            const activityList = document.getElementById('activityList');
+            const soundToggleCheckbox = document.getElementById(
+                'soundToggleCheckbox'
+            );
+
+            const votingTitleInput = document.getElementById('votingTitle');
+            const likeOptionInput = document.getElementById('likeOption');
+            const commentOptionInput = document.getElementById('commentOption');
+            const votingDurationInput =
+                document.getElementById('votingDuration');
+            const startVotingBtn = document.getElementById('startVotingBtn');
+            const endVotingBtn = document.getElementById('endVotingBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const gameSelect = document.getElementById('gameSelect');
+            const presetOptions = document.getElementById('presetOptions');
+
+            const customTitleInput = document.getElementById('customTitle');
+            const customLikeOptionInput =
+                document.getElementById('customLikeOption');
+            const customCommentOptionInput = document.getElementById(
+                'customCommentOption'
+            );
+            const saveCustomBtn = document.getElementById('saveCustomBtn');
+
+            const refreshPreviewBtn =
+                document.getElementById('refreshPreviewBtn');
+            const openNewWindowBtn =
+                document.getElementById('openNewWindowBtn');
+            const simToggleBtn = document.getElementById('simToggleBtn');
+
+            let soundsEnabled = true;
+            let simulationActive = false;
+
+            const sounds = {
+                voteStart: document.getElementById('soundVoteStart'),
+                voteEnd: document.getElementById('soundVoteEnd'),
+                newVote: document.getElementById('soundNewVote'),
+                winnerLikes: document.getElementById('soundWinnerLikes'),
+                winnerComments: document.getElementById('soundWinnerComments'),
+                tie: document.getElementById('soundTie'),
+            };
+
+            function playSound(soundType) {
+                if (!soundsEnabled) return;
+
+                const sound = sounds[soundType];
+                if (sound) {
+                    sound.pause();
+                    sound.currentTime = 0;
+                    sound.volume = 0.5;
+                    sound
+                        .play()
+                        .catch((e) =>
+                            console.log('No se pudo reproducir el sonido:', e)
+                        );
+                }
+            }
+
+            document
+                .getElementById('soundToggle')
+                .addEventListener('click', () => {
+                    soundsEnabled = !soundsEnabled;
+                    soundToggleCheckbox.checked = soundsEnabled;
+                    socket.emit('toggleSounds', soundsEnabled);
+                });
+
+            startVotingBtn.addEventListener('click', () => {
+                const votingData = {
+                    title: votingTitleInput.value || '¿Qué decisión tomar?',
+                    likeOption: likeOptionInput.value || 'Opción A',
+                    commentOption: commentOptionInput.value || 'Opción B',
+                    duration: parseInt(votingDurationInput.value) || 30,
+                };
+
+                socket.emit('startVoting', votingData);
+
+                setTimeout(() => {
+                    previewFrame.src = previewFrame.src;
+                }, 500);
+            });
+
+            endVotingBtn.addEventListener('click', () => {
+                socket.emit('endVoting');
+
+                setTimeout(() => {
+                    previewFrame.src = previewFrame.src;
+                }, 500);
+            });
+
+            clearBtn.addEventListener('click', () => {
+                activityList.innerHTML =
+                    '<div class="d-flex align-items-center p-2 mb-2 bg-light rounded"><div class="me-2">⚙️</div><div>Esperando actividad...</div></div>';
+
+                votingTitleInput.value = '';
+                likeOptionInput.value = '';
+                commentOptionInput.value = '';
+                votingDurationInput.value = '30';
+                customTitleInput.value = '';
+                customLikeOptionInput.value = '';
+                customCommentOptionInput.value = '';
+
+                previewFrame.src = previewFrame.src;
+            });
+
+            refreshPreviewBtn.addEventListener('click', () => {
+                previewFrame.src = previewFrame.src;
+            });
+
+            openNewWindowBtn.addEventListener('click', () => {
+                window.open('/', '_blank');
+            });
+
+            simToggleBtn.addEventListener('click', () => {
+                simulationActive = !simulationActive;
+
+                if (simulationActive) {
+                    socket.emit('startSimulation');
+                    simToggleBtn.textContent = 'Detener Simulación';
+                    simToggleBtn.classList.remove('btn-secondary');
+                    simToggleBtn.classList.add('btn-danger');
+                } else {
+                    socket.emit('stopSimulation');
+                    simToggleBtn.textContent = 'Iniciar Simulación';
+                    simToggleBtn.classList.remove('btn-danger');
+                    simToggleBtn.classList.add('btn-secondary');
+                }
+            });
+
+            saveCustomBtn.addEventListener('click', () => {
+                const title =
+                    customTitleInput.value || 'Votación personalizada';
+                const likeOption = customLikeOptionInput.value || 'Opción A';
+                const commentOption =
+                    customCommentOptionInput.value || 'Opción B';
+
+                const customVoting = { title, likeOption, commentOption };
+                socket.emit('saveCustomVoting', customVoting);
+
+                customTitleInput.value = '';
+                customLikeOptionInput.value = '';
+                customCommentOptionInput.value = '';
+
+                addSystemActivity(`Votación personalizada "${title}" guardada`);
+            });
+
+            gameSelect.addEventListener('change', (e) => {
+                const selectedGame = e.target.value;
+                presetOptions.innerHTML = '';
+
+                if (!selectedGame) return;
+
+                if (selectedGame === 'custom') {
+                    socket.emit('getCustomVotings');
+                } else {
+                    fetch(`/api/presets`)
+                        .then((response) => response.json())
+                        .then((presets) => {
+                            const gamePresets = presets.find(
+                                (p) => p.id === selectedGame
+                            );
+                            if (gamePresets && gamePresets.votings) {
+                                gamePresets.votings.forEach((preset, index) => {
+                                    const presetItem =
+                                        document.createElement('a');
+                                    presetItem.className =
+                                        'list-group-item list-group-item-action bg-light text-dark';
+                                    presetItem.innerHTML = `${index + 1}. ${
+                                        preset.title
+                                    }: "${preset.likeOption}" vs "${
+                                        preset.commentOption
+                                    }"`;
+                                    presetItem.addEventListener('click', () => {
+                                        votingTitleInput.value = preset.title;
+                                        likeOptionInput.value =
+                                            preset.likeOption;
+                                        commentOptionInput.value =
+                                            preset.commentOption;
+                                    });
+                                    presetOptions.appendChild(presetItem);
+                                });
+                            }
+                        })
+                        .catch((err) =>
+                            console.error('Error al cargar presets:', err)
+                        );
+                }
+            });
+
+            function addActivityItem(event) {
+                const waitingItem =
+                    activityList.querySelector('div:first-child');
+                if (
+                    waitingItem &&
+                    waitingItem
+                        .querySelector('div:last-child')
+                        .textContent.trim() === 'Esperando actividad...'
+                ) {
+                    activityList.removeChild(waitingItem);
+                }
+
+                if (activityList.children.length >= 15) {
+                    activityList.removeChild(activityList.lastChild);
+                }
+
+                const div = document.createElement('div');
+                div.className = `d-flex align-items-center p-2 mb-2 rounded`;
+                div.id = `event-${event.id}`;
+
+                // Establecer color de fondo según tipo de evento
+                switch (event.type) {
+                    case 'comment':
+                        div.classList.add('bg-primary', 'bg-opacity-25');
+                        break;
+                    case 'like':
+                        content = `<span class="fw-bold me-1">${event.user}</span> envió ${event.count} likes`;
+                        break;
+                    case 'vote':
+                        content = `<span class="fw-bold me-1">${event.user}</span> ${event.text}`;
+                        break;
+                    case 'system':
+                        div.classList.add('bg-secondary', 'bg-opacity-25');
+                        break;
+                    case 'error':
+                        div.classList.add('bg-warning', 'bg-opacity-25');
+                        break;
+                    case 'result':
+                        div.classList.add('bg-info', 'bg-opacity-25');
+                        break;
+                    default:
+                        div.classList.add('bg-light');
+                }
+
+                const iconMap = {
+                    comment: '💬',
+                    like: '❤️',
+                    vote: '🗳️',
+                    system: '⚙️',
+                    error: '⚠️',
+                    result: '🏆',
+                };
+
+                let content = '';
+
+                switch (event.type) {
+                    case 'comment':
+                        content = `<span class="fw-bold me-1">${event.user}:</span> ${event.text}`;
+                        break;
+                    case 'like':
+                        content = `<span class="fw-bold me-1">${event.user}</span> envió ${event.count} likes`;
+                        break;
+                    case 'vote':
+                        content = `<span class="fw-bold me-1">${event.user}</span> ${event.text}`;
+                        break;
+                    default:
+                        content = event.text || JSON.stringify(event);
+                }
+
+                div.innerHTML = `
+                <div class="me-2">
+                    ${iconMap[event.type] || '📌'}
+                </div>
+                <div>${content}</div>
+            `;
+
+                activityList.insertBefore(div, activityList.firstChild);
+            }
+
+            function addSystemActivity(text) {
+                addActivityItem({
+                    id: Date.now(),
+                    type: 'system',
+                    text: text,
+                });
+            }
+
+            socket.on('gameState', (gameState) => {
+                console.log('Estado del juego actualizado:', gameState);
+
+                if (
+                    gameState.recentEvents &&
+                    gameState.recentEvents.length > 0
+                ) {
+                    gameState.recentEvents.forEach((event) => {
+                        if (!document.getElementById(`event-${event.id}`)) {
+                            addActivityItem(event);
+                        }
+                    });
+                }
+            });
+
+            socket.on('customVotingsUpdated', (customVotings) => {
+                if (gameSelect.value === 'custom') {
+                    presetOptions.innerHTML = '';
+
+                    if (customVotings.length === 0) {
+                        const noVotings = document.createElement('div');
+                        noVotings.className = 'text-muted p-3 text-center';
+                        noVotings.textContent =
+                            'No hay votaciones personalizadas guardadas';
+                        presetOptions.appendChild(noVotings);
+                        return;
+                    }
+
+                    customVotings.forEach((voting, index) => {
+                        const presetItem = document.createElement('a');
+                        presetItem.className =
+                            'list-group-item list-group-item-action bg-light text-dark';
+                        presetItem.innerHTML = `${index + 1}. ${
+                            voting.title
+                        }: "${voting.likeOption}" vs "${voting.commentOption}"`;
+                        presetItem.addEventListener('click', () => {
+                            votingTitleInput.value = voting.title;
+                            likeOptionInput.value = voting.likeOption;
+                            commentOptionInput.value = voting.commentOption;
+                        });
+                        presetOptions.appendChild(presetItem);
+                    });
+                }
+            });
+
+            socket.on('soundSettings', (settings) => {
+                soundsEnabled = settings.enableSounds;
+                soundToggleCheckbox.checked = soundsEnabled;
+            });
+
+            socket.on('playSound', (soundType) => {
+                playSound(soundType);
+            });
+
+            window.addEventListener('load', () => {
+                console.log('Panel de configuración cargado');
+                addSystemActivity('Panel de configuración inicializado');
+                socket.emit('getGameState');
+            });
+        </script>
+    </body>
+</html>
