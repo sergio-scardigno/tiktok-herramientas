@@ -681,6 +681,7 @@ function startVoting(title, likeOption, commentOption, duration = 30) {
     }
 
     gameConfig.votingActive = true;
+    gameConfig.votingDuration = duration; // Guardamos la duración en la configuración
     gameConfig.currentVoting = {
         id: Date.now(),
         title: title || '¿Qué decisión tomar?',
@@ -692,14 +693,11 @@ function startVoting(title, likeOption, commentOption, duration = 30) {
         commentsVoters: {},
     };
 
-    addRecentEvent({
-        type: 'system',
-        text: `Votación iniciada: "${title}" - ${duration} segundos`,
-    });
+    console.log(`Votación iniciada con duración: ${duration} segundos`); // Debug
 
     io.emit('gameState', gameConfig);
 
-    // Auto-end voting after duration
+    // 🔴 Se corrige el tiempo de finalización de la votación para que termine exactamente cuando debe
     setTimeout(() => {
         if (gameConfig.votingActive && gameConfig.currentVoting.id) {
             endVoting();

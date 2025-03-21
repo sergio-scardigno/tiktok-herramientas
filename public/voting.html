@@ -435,14 +435,11 @@
 
             // Game state update
             socket.on('gameState', (gameState) => {
-                // Update display based on voting state
                 if (gameState.votingActive && gameState.currentVoting) {
-                    // Show voting card, hide others
                     votingCard.classList.remove('d-none');
                     waitingCard.classList.add('d-none');
                     resultCard.classList.add('d-none');
 
-                    // Update voting content
                     votingTitleDisplay.textContent =
                         gameState.currentVoting.title;
                     likeOptionDisplay.textContent =
@@ -452,116 +449,13 @@
                     likeCount.textContent = gameState.currentVoting.likes;
                     commentCount.textContent = gameState.currentVoting.comments;
 
-                    // Update voters lists
-                    createVoterElements(
-                        gameState.currentVoting.likesVoters,
-                        likeVoters
-                    );
-                    createVoterElements(
-                        gameState.currentVoting.commentsVoters,
-                        commentVoters
-                    );
+                    console.log(
+                        'Recibido estado del juego con duración:',
+                        gameState.votingDuration
+                    ); // Debug
 
-                    // Update last voter
-                    const lastLikeVoter = Object.keys(
-                        gameState.currentVoting.likesVoters || {}
-                    ).pop();
-                    const lastCommentVoter = Object.keys(
-                        gameState.currentVoting.commentsVoters || {}
-                    ).pop();
-
-                    if (lastLikeVoter && lastCommentVoter) {
-                        // Compare timestamps if available, otherwise use the last added
-                        lastVoter.innerHTML = `Último voto: <strong>${lastLikeVoter}</strong> ❤️`;
-                        addActivity(
-                            `${lastLikeVoter} votó por "${gameState.currentVoting.likeOption}"`,
-                            '❤️'
-                        );
-                    } else if (lastLikeVoter) {
-                        lastVoter.innerHTML = `Último voto: <strong>${lastLikeVoter}</strong> ❤️`;
-                        addActivity(
-                            `${lastLikeVoter} votó por "${gameState.currentVoting.likeOption}"`,
-                            '❤️'
-                        );
-                    } else if (lastCommentVoter) {
-                        lastVoter.innerHTML = `Último voto: <strong>${lastCommentVoter}</strong> 💬`;
-                        addActivity(
-                            `${lastCommentVoter} votó por "${gameState.currentVoting.commentOption}"`,
-                            '💬'
-                        );
-                    } else {
-                        lastVoter.textContent = 'Nadie ha votado aún';
-                    }
-
-                    // Start timer if not already running
-                    if (!timerId) {
-                        startTimer(gameState.votingDuration || 30);
-                        addActivity(
-                            `¡Nueva votación iniciada! "${gameState.currentVoting.title}"`,
-                            '🎮'
-                        );
-                    }
-                } else {
-                    // Reset timer
-                    if (timerId) {
-                        clearInterval(timerId);
-                        timerId = null;
-                    }
-
-                    // Show waiting card if no active voting
-                    if (
-                        !gameState.currentVoting ||
-                        !gameState.currentVoting.id
-                    ) {
-                        votingCard.classList.add('d-none');
-                        resultCard.classList.add('d-none');
-                        waitingCard.classList.remove('d-none');
-                    } else {
-                        // Show result card if voting ended
-                        let resultText = '';
-                        let resultIcon = '';
-
-                        if (
-                            gameState.currentVoting.likes >
-                            gameState.currentVoting.comments
-                        ) {
-                            resultText = `¡Gana "${gameState.currentVoting.likeOption}" con ${gameState.currentVoting.likes} votos!`;
-                            resultIcon = '❤️';
-                        } else if (
-                            gameState.currentVoting.comments >
-                            gameState.currentVoting.likes
-                        ) {
-                            resultText = `¡Gana "${gameState.currentVoting.commentOption}" con ${gameState.currentVoting.comments} votos!`;
-                            resultIcon = '💬';
-                        } else if (
-                            gameState.currentVoting.likes === 0 &&
-                            gameState.currentVoting.comments === 0
-                        ) {
-                            resultText = 'No se recibieron votos';
-                            resultIcon = '😶';
-                        } else {
-                            resultText = `¡Empate! ${gameState.currentVoting.likes} a ${gameState.currentVoting.comments}`;
-                            resultIcon = '🤝';
-                        }
-
-                        addActivity(`Resultado: ${resultText}`, resultIcon);
-                        resultMessage.innerHTML = `${resultIcon} ${resultText}`;
-                        votingCard.classList.add('d-none');
-                        waitingCard.classList.add('d-none');
-                        resultCard.classList.remove('d-none');
-
-                        <!-- Auto-hide result after 10 seconds -->
-                        setTimeout(() => {
-                            if (!gameState.votingActive) {
-                                resultCard.classList.add('d-none');
-                                waitingCard.classList.remove('d-none');
-                                addActivity(
-                                    'Esperando nueva votación...',
-                                    '⏱️'
-                                );
-                            }
-                        }, 10000);
-                    }
+                    // 🔴 Se asegura que el temporizador use la duración correcta
+                    startTimer(gameState.votingDuration || 30);
                 }
             });
 
@@ -570,15 +464,19 @@
                 duration = seconds;
                 startTime = Date.now();
 
-                // Reset timer bar
+                // Resetear la barra de tiempo
                 timerBar.style.width = '100%';
 
-                // Clear any existing timer
+                // Limpiar temporizador anterior si existe
                 if (timerId) {
                     clearInterval(timerId);
                 }
 
-                // Start new timer
+                console.log(
+                    `Iniciando temporizador con duración: ${seconds} segundos`
+                ); // Debug
+
+                // Iniciar nuevo temporizador
                 timerId = setInterval(() => {
                     const elapsed = Math.floor((Date.now() - startTime) / 1000);
                     const remaining = duration - elapsed;
@@ -587,11 +485,12 @@
                         clearInterval(timerId);
                         timerId = null;
                         timerBar.style.width = '0%';
+                        console.log('⏳ Votación terminada'); // Debug
                     } else {
                         const percentage = (remaining / duration) * 100;
                         timerBar.style.width = `${percentage}%`;
 
-                        // Add warning class when time is running out
+                        // Advertencia si queda poco tiempo
                         if (remaining <= 5) {
                             timerBar.classList.add('bg-danger');
                             timerBar.style.animation =

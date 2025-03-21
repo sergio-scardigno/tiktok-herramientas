@@ -426,14 +426,14 @@
                     title: votingTitleInput.value || '¿Qué decisión tomar?',
                     likeOption: likeOptionInput.value || 'Opción A',
                     commentOption: commentOptionInput.value || 'Opción B',
-                    duration: parseInt(votingDurationInput.value) || 30,
+                    duration: parseInt(votingDurationInput.value) || 30, // Aseguramos que se envía la duración
                 };
 
+                console.log(
+                    'Enviando votación con duración:',
+                    votingData.duration
+                ); // Debug
                 socket.emit('startVoting', votingData);
-
-                setTimeout(() => {
-                    previewFrame.src = previewFrame.src;
-                }, 500);
             });
 
             endVotingBtn.addEventListener('click', () => {
