@@ -12,237 +12,508 @@
             href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
             rel="stylesheet"
         />
+        <style>
+            body {
+                font-family: 'Poppins', sans-serif;
+                background-color: #f5f5f5;
+            }
+            .card {
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+            }
+            .card-header {
+                font-weight: 600;
+                background-color: #f8f9fa;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+            }
+            .btn-primary {
+                background-color: #fe2c55;
+                border-color: #fe2c55;
+            }
+            .btn-primary:hover,
+            .btn-primary:active,
+            .btn-primary:focus {
+                background-color: #e6254c !important;
+                border-color: #e6254c !important;
+            }
+            .nav-tabs .nav-link.active {
+                border-color: #fe2c55;
+                color: #fe2c55;
+                font-weight: 600;
+            }
+            .list-group-item:hover {
+                background-color: #f8f9fa;
+            }
+            #activityList {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .navbar-brand {
+                font-weight: 700;
+            }
+            .form-label {
+                font-weight: 500;
+            }
+            footer {
+                color: rgba(255, 255, 255, 0.6);
+            }
+        </style>
     </head>
     <body>
+        <!-- Barra de navegación -->
         <nav class="navbar navbar-dark bg-dark navbar-expand-lg mb-4">
             <div class="container">
-                <a class="navbar-brand" href="#">
-                    <span class="me-2">🎮</span> TikTok Decision Maker
-                </a>
-                <div class="ms-auto" id="soundToggle">
-                    <span>Sonidos</span>
-                    <label class="form-check form-switch ms-2 d-inline-block">
-                        <input
-                            type="checkbox"
-                            class="form-check-input"
-                            checked
-                            id="soundToggleCheckbox"
-                        />
-                    </label>
+                <a class="navbar-brand" href="#">🎮 TikTok Decision Maker</a>
+                <div class="ms-auto d-flex align-items-center">
+                    <div
+                        id="soundToggle"
+                        class="d-flex align-items-center me-3"
+                    >
+                        <span class="text-light">Sonidos</span>
+                        <label class="form-check form-switch ms-2 mb-0">
+                            <input
+                                type="checkbox"
+                                class="form-check-input"
+                                checked
+                                id="soundToggleCheckbox"
+                            />
+                        </label>
+                    </div>
+                    <button
+                        class="btn btn-sm btn-outline-light"
+                        id="simToggleBtn"
+                    >
+                        Iniciar Simulación
+                    </button>
                 </div>
             </div>
         </nav>
 
+        <!-- Contenido principal -->
         <div class="container mb-4">
             <div class="row">
+                <!-- Panel de Configuración - Columna izquierda -->
                 <div class="col-md-4">
-                    <!-- TikTok Username Configuration -->
+                    <!-- Conexión TikTok -->
                     <div class="card mb-3">
                         <div class="card-header d-flex align-items-center">
-                            <span class="me-2">🔗</span> Conexión TikTok
+                            <span>🔗 Conexión TikTok</span>
                         </div>
                         <div class="card-body">
-                            <div class="mb-3">
-                                <label for="tiktokUsername" class="form-label"
-                                    >Usuario de TikTok:</label
+                            <label for="tiktokUsername" class="form-label"
+                                >Usuario de TikTok:</label
+                            >
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">@</span>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="tiktokUsername"
+                                    placeholder="Nombre de usuario"
+                                />
+                                <button
+                                    class="btn btn-primary"
+                                    id="updateUsernameBtn"
                                 >
-                                <div class="input-group">
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        id="tiktokUsername"
-                                        placeholder="Nombre de usuario"
-                                    />
-                                    <button
-                                        class="btn btn-primary"
-                                        id="updateUsernameBtn"
-                                    >
-                                        Actualizar
-                                    </button>
+                                    Actualizar
+                                </button>
+                            </div>
+                            <div class="d-flex align-items-center mt-2">
+                                <div
+                                    class="spinner-grow spinner-grow-sm me-2"
+                                    role="status"
+                                    style="width: 8px; height: 8px"
+                                ></div>
+                                <small class="form-text" id="connectionStatus"
+                                    >No conectado</small
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selector de Juego y Plantillas -->
+                    <div class="card mb-3">
+                        <div class="card-header">🎲 Plantillas de Juego</div>
+                        <div class="card-body">
+                            <label for="gameSelect" class="form-label"
+                                >Selecciona un juego:</label
+                            >
+                            <select class="form-select mb-3" id="gameSelect">
+                                <option value="" selected>
+                                    -- Selecciona un juego --
+                                </option>
+                                <option value="minecraft">Minecraft</option>
+                                <option value="fortnite">Fortnite</option>
+                                <option value="gta">GTA V</option>
+                                <option value="custom">
+                                    Votaciones personalizadas
+                                </option>
+                            </select>
+
+                            <div class="list-group" id="presetOptions">
+                                <div class="text-muted p-3 text-center">
+                                    Selecciona un juego para ver las plantillas
                                 </div>
-                                <div class="form-text" id="connectionStatus">
-                                    No conectado
-                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Panel de control -->
+                    <!-- Opciones de Herramientas -->
                     <div class="card mb-3">
-                        <div class="card-header d-flex align-items-center">
-                            <span class="me-2">🗳️</span> Iniciar Votación
-                        </div>
+                        <div class="card-header">🛠️ Herramientas</div>
                         <div class="card-body">
-                            <div class="mb-3">
-                                <label for="votingTitle" class="form-label"
-                                    >Título:</label
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-secondary" id="clearBtn">
+                                    🧹 Limpiar Actividad
+                                </button>
+                                <button
+                                    class="btn btn-danger"
+                                    id="endVotingBtn"
                                 >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="votingTitle"
-                                    placeholder="¿Qué decisión tomar?"
-                                />
+                                    ⏹️ Finalizar Votación Actual
+                                </button>
                             </div>
-                            <div class="mb-3">
-                                <label for="likeOption" class="form-label"
-                                    >Opción Likes (❤️):</label
-                                >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="likeOption"
-                                    placeholder="Opción A"
-                                />
-                            </div>
-                            <div class="mb-3">
-                                <label for="commentOption" class="form-label"
-                                    >Opción Comentarios (💬):</label
-                                >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="commentOption"
-                                    placeholder="Opción B"
-                                />
-                            </div>
-                            <div class="mb-3">
-                                <label for="votingDuration" class="form-label"
-                                    >Duración (segundos):</label
-                                >
-                                <input
-                                    type="number"
-                                    class="form-control"
-                                    id="votingDuration"
-                                    value="30"
-                                    min="5"
-                                    max="300"
-                                />
-                            </div>
-                            <button
-                                class="btn btn-primary w-100"
-                                id="startVotingBtn"
-                            >
-                                Iniciar Votación
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="card mb-3">
-                        <div class="card-header d-flex align-items-center">
-                            <span class="me-2">📋</span> Votaciones Predefinidas
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="gameSelect" class="form-label"
-                                    >Juego:</label
-                                >
-                                <select class="form-select" id="gameSelect">
-                                    <option value="">Seleccionar juego</option>
-                                    <option value="phasmophobia">
-                                        Phasmophobia
-                                    </option>
-                                    <option value="fortnite">Fortnite</option>
-                                    <option value="custom">
-                                        Personalizado
-                                    </option>
-                                </select>
-                            </div>
-                            <div
-                                class="preset-list list-group"
-                                id="presetOptions"
-                            >
-                                <!-- Aquí se cargarán los presets -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card mb-3">
-                        <div class="card-header d-flex align-items-center">
-                            <span class="me-2">⚙️</span> Acciones
-                        </div>
-                        <div class="card-body">
-                            <button
-                                class="btn btn-primary w-100 mb-2"
-                                id="endVotingBtn"
-                            >
-                                Finalizar Votación
-                            </button>
-                            <button
-                                class="btn btn-secondary w-100 mb-2"
-                                id="simToggleBtn"
-                            >
-                                Iniciar Simulación
-                            </button>
-                            <button
-                                class="btn btn-secondary w-100"
-                                id="clearBtn"
-                            >
-                                Limpiar Todo
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="card mb-3">
-                        <div class="card-header d-flex align-items-center">
-                            <span class="me-2">💾</span> Guardar Votación
-                            Personalizada
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="customTitle" class="form-label"
-                                    >Título:</label
-                                >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="customTitle"
-                                    placeholder="Mi votación personalizada"
-                                />
-                            </div>
-                            <div class="mb-3">
-                                <label for="customLikeOption" class="form-label"
-                                    >Opción Likes (❤️):</label
-                                >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="customLikeOption"
-                                    placeholder="Mi opción A"
-                                />
-                            </div>
-                            <div class="mb-3">
-                                <label
-                                    for="customCommentOption"
-                                    class="form-label"
-                                    >Opción Comentarios (💬):</label
-                                >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    id="customCommentOption"
-                                    placeholder="Mi opción B"
-                                />
-                            </div>
-                            <button
-                                class="btn btn-primary w-100"
-                                id="saveCustomBtn"
-                            >
-                                Guardar Preset
-                            </button>
                         </div>
                     </div>
                 </div>
 
+                <!-- Columna central -->
                 <div class="col-md-5">
-                    <!-- Vista previa -->
-                    <div class="card h-100">
+                    <!-- Tabs para diferentes modos -->
+                    <ul class="nav nav-tabs mb-3" id="toolsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button
+                                class="nav-link active"
+                                id="voting-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#voting-content"
+                                type="button"
+                                role="tab"
+                                aria-controls="voting-content"
+                                aria-selected="true"
+                            >
+                                🗳️ Votación
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button
+                                class="nav-link"
+                                id="balloon-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#balloon-content"
+                                type="button"
+                                role="tab"
+                                aria-controls="balloon-content"
+                                aria-selected="false"
+                            >
+                                🎈 Reto del Globo
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button
+                                class="nav-link"
+                                id="custom-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#custom-content"
+                                type="button"
+                                role="tab"
+                                aria-controls="custom-content"
+                                aria-selected="false"
+                            >
+                                ✨ Personalizar
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Contenido de las tabs -->
+                    <div class="tab-content" id="toolsTabsContent">
+                        <!-- Contenido de Votación -->
+                        <div
+                            class="tab-pane fade show active"
+                            id="voting-content"
+                            role="tabpanel"
+                            aria-labelledby="voting-tab"
+                        >
+                            <div class="card">
+                                <div class="card-header">
+                                    🗳️ Iniciar Votación
+                                </div>
+                                <div class="card-body">
+                                    <label for="votingTitle" class="form-label"
+                                        >Título:</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control mb-3"
+                                        id="votingTitle"
+                                        placeholder="¿Qué decisión tomar?"
+                                    />
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label
+                                                for="likeOption"
+                                                class="form-label"
+                                            >
+                                                <span class="me-1">❤️</span>
+                                                Opción Likes:
+                                            </label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="likeOption"
+                                                placeholder="Opción A"
+                                            />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label
+                                                for="commentOption"
+                                                class="form-label"
+                                            >
+                                                <span class="me-1">💬</span>
+                                                Opción Comentarios:
+                                            </label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="commentOption"
+                                                placeholder="Opción B"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label
+                                            for="votingDuration"
+                                            class="form-label"
+                                        >
+                                            <span class="me-1">⏱️</span>
+                                            Duración:
+                                        </label>
+                                        <div class="d-flex align-items-center">
+                                            <input
+                                                type="range"
+                                                class="form-range me-2"
+                                                id="votingDuration"
+                                                value="30"
+                                                min="5"
+                                                max="300"
+                                                step="5"
+                                                oninput="votingDurationValue.textContent = this.value"
+                                            />
+                                            <span id="votingDurationValue"
+                                                >30</span
+                                            >
+                                            <span class="ms-1">seg</span>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        class="btn btn-primary w-100 mt-3"
+                                        id="startVotingBtn"
+                                    >
+                                        <span class="me-1">▶️</span> Iniciar
+                                        Votación
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenido de Reto del Globo -->
+                        <div
+                            class="tab-pane fade"
+                            id="balloon-content"
+                            role="tabpanel"
+                            aria-labelledby="balloon-tab"
+                        >
+                            <div class="card">
+                                <div class="card-header">🎈 Reto del Globo</div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">
+                                        El globo se inflará con cada like.
+                                        ¡Alcanza el objetivo antes de que
+                                        explote!
+                                    </p>
+
+                                    <div class="mb-3">
+                                        <label
+                                            for="balloonTarget"
+                                            class="form-label"
+                                        >
+                                            <span class="me-1">🎯</span>
+                                            Objetivo de likes:
+                                        </label>
+                                        <div class="d-flex align-items-center">
+                                            <input
+                                                type="range"
+                                                class="form-range me-2"
+                                                id="balloonTarget"
+                                                value="50"
+                                                min="10"
+                                                max="200"
+                                                step="5"
+                                                oninput="balloonTargetValue.textContent = this.value"
+                                            />
+                                            <span id="balloonTargetValue"
+                                                >50</span
+                                            >
+                                            <span class="ms-1">likes</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label
+                                            for="balloonDuration"
+                                            class="form-label"
+                                        >
+                                            <span class="me-1">⏱️</span> Tiempo
+                                            límite:
+                                        </label>
+                                        <div class="d-flex align-items-center">
+                                            <input
+                                                type="range"
+                                                class="form-range me-2"
+                                                id="balloonDuration"
+                                                value="30"
+                                                min="10"
+                                                max="120"
+                                                step="5"
+                                                oninput="balloonDurationValue.textContent = this.value"
+                                            />
+                                            <span id="balloonDurationValue"
+                                                >30</span
+                                            >
+                                            <span class="ms-1">seg</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label
+                                            for="balloonColor"
+                                            class="form-label"
+                                        >
+                                            <span class="me-1">🎨</span> Color
+                                            del globo:
+                                        </label>
+                                        <select
+                                            class="form-select"
+                                            id="balloonColor"
+                                        >
+                                            <option value="red" selected>
+                                                Rojo
+                                            </option>
+                                            <option value="blue">Azul</option>
+                                            <option value="green">Verde</option>
+                                            <option value="yellow">
+                                                Amarillo
+                                            </option>
+                                            <option value="purple">
+                                                Morado
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <button
+                                            class="btn btn-primary"
+                                            id="startBalloonBtn"
+                                        >
+                                            <span class="me-1">▶️</span> Iniciar
+                                            Reto
+                                        </button>
+                                        <button
+                                            class="btn btn-secondary"
+                                            id="endBalloonBtn"
+                                        >
+                                            <span class="me-1">⏹️</span>
+                                            Finalizar Reto
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenido de Personalizar -->
+                        <div
+                            class="tab-pane fade"
+                            id="custom-content"
+                            role="tabpanel"
+                            aria-labelledby="custom-tab"
+                        >
+                            <div class="card">
+                                <div class="card-header">
+                                    ✨ Añadir Votación Personalizada
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">
+                                        Guarda tus propias votaciones para
+                                        usarlas después.
+                                    </p>
+
+                                    <label for="customTitle" class="form-label"
+                                        >Título:</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control mb-3"
+                                        id="customTitle"
+                                        placeholder="Título de la votación"
+                                    />
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label
+                                                for="customLikeOption"
+                                                class="form-label"
+                                            >
+                                                <span class="me-1">❤️</span>
+                                                Opción Likes:
+                                            </label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="customLikeOption"
+                                                placeholder="Opción A"
+                                            />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label
+                                                for="customCommentOption"
+                                                class="form-label"
+                                            >
+                                                <span class="me-1">💬</span>
+                                                Opción Comentarios:
+                                            </label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="customCommentOption"
+                                                placeholder="Opción B"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        class="btn btn-primary w-100"
+                                        id="saveCustomBtn"
+                                    >
+                                        <span class="me-1">💾</span> Guardar
+                                        Votación
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vista Previa -->
+                    <div class="card mt-3">
                         <div
                             class="card-header d-flex justify-content-between align-items-center"
                         >
-                            <div class="d-flex align-items-center">
-                                <span class="me-2">👁️</span> Vista Previa
-                            </div>
+                            <span>👁️ Vista Previa</span>
                             <div>
                                 <button
                                     class="btn btn-sm btn-secondary me-2"
@@ -259,36 +530,35 @@
                             </div>
                         </div>
                         <div class="card-body p-0">
-                            <div class="position-relative">
-                                <iframe
-                                    id="previewFrame"
-                                    class="w-100"
-                                    style="height: 400px"
-                                    src="/"
-                                    frameborder="0"
-                                ></iframe>
-                            </div>
+                            <iframe
+                                id="previewFrame"
+                                class="w-100"
+                                style="
+                                    height: 400px;
+                                    border-radius: 0 0 10px 10px;
+                                "
+                                src="/voting"
+                                frameborder="0"
+                            ></iframe>
                         </div>
                     </div>
                 </div>
 
+                <!-- Actividad Reciente - Columna derecha -->
                 <div class="col-md-3">
-                    <!-- Actividad reciente -->
-                    <div class="card h-100">
-                        <div class="card-header d-flex align-items-center">
-                            <span class="me-2">⚡</span> Actividad Reciente
+                    <div class="card">
+                        <div
+                            class="card-header d-flex justify-content-between align-items-center"
+                        >
+                            <span>⚡ Actividad Reciente</span>
+                            <span class="badge bg-primary rounded-pill">0</span>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-2" id="activityList">
                             <div
-                                id="activityList"
-                                style="max-height: 400px; overflow-y: auto"
+                                class="d-flex align-items-center p-2 mb-2 bg-light rounded"
                             >
-                                <div
-                                    class="d-flex align-items-center p-2 mb-2 bg-light rounded"
-                                >
-                                    <div class="me-2">⚙️</div>
-                                    <div>Esperando actividad...</div>
-                                </div>
+                                <div class="me-2">⚙️</div>
+                                <div>Esperando actividad...</div>
                             </div>
                         </div>
                     </div>
@@ -296,11 +566,27 @@
             </div>
         </div>
 
+        <!-- Pie de página -->
         <footer class="py-3 text-center text-muted bg-dark">
             <p class="mb-0">TikTok Decision Maker para Juegos © 2025</p>
         </footer>
 
         <!-- Sonidos -->
+        <audio
+            id="soundBalloonStart"
+            src="sounds/balloon-inflate.mp3"
+            preload="auto"
+        ></audio>
+        <audio
+            id="soundBalloonSuccess"
+            src="sounds/balloon-pop.mp3"
+            preload="auto"
+        ></audio>
+        <audio
+            id="soundBalloonFail"
+            src="sounds/balloon-deflate.mp3"
+            preload="auto"
+        ></audio>
         <audio
             id="soundVoteStart"
             src="sounds/vote-start.mp3"
@@ -329,8 +615,19 @@
         <audio id="soundTie" src="sounds/vote-tie.mp3" preload="auto"></audio>
 
         <!-- JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script>
+            // Inicializar elementos para los valores de los sliders
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('votingDurationValue').textContent =
+                    document.getElementById('votingDuration').value;
+                document.getElementById('balloonTargetValue').textContent =
+                    document.getElementById('balloonTarget').value;
+                document.getElementById('balloonDurationValue').textContent =
+                    document.getElementById('balloonDuration').value;
+            });
+
             const socket = io();
             const previewFrame = document.getElementById('previewFrame');
             const activityList = document.getElementById('activityList');
@@ -370,6 +667,14 @@
                 document.getElementById('openNewWindowBtn');
             const simToggleBtn = document.getElementById('simToggleBtn');
 
+            // Configuración del Reto del Globo
+            const balloonTargetInput = document.getElementById('balloonTarget');
+            const balloonDurationInput =
+                document.getElementById('balloonDuration');
+            const balloonColorSelect = document.getElementById('balloonColor');
+            const startBalloonBtn = document.getElementById('startBalloonBtn');
+            const endBalloonBtn = document.getElementById('endBalloonBtn');
+
             let soundsEnabled = true;
             let simulationActive = false;
 
@@ -380,6 +685,9 @@
                 winnerLikes: document.getElementById('soundWinnerLikes'),
                 winnerComments: document.getElementById('soundWinnerComments'),
                 tie: document.getElementById('soundTie'),
+                balloonStart: document.getElementById('soundBalloonStart'),
+                balloonSuccess: document.getElementById('soundBalloonSuccess'),
+                balloonFail: document.getElementById('soundBalloonFail'),
             };
 
             function playSound(soundType) {
@@ -413,6 +721,7 @@
                 addSystemActivity(`Cambiando usuario de TikTok a: ${username}`);
             });
 
+            // Toggle sonidos
             document
                 .getElementById('soundToggle')
                 .addEventListener('click', () => {
@@ -421,29 +730,34 @@
                     socket.emit('toggleSounds', soundsEnabled);
                 });
 
+            // Iniciar votación
             startVotingBtn.addEventListener('click', () => {
                 const votingData = {
                     title: votingTitleInput.value || '¿Qué decisión tomar?',
                     likeOption: likeOptionInput.value || 'Opción A',
                     commentOption: commentOptionInput.value || 'Opción B',
-                    duration: parseInt(votingDurationInput.value) || 30, // Aseguramos que se envía la duración
+                    duration: parseInt(votingDurationInput.value) || 30,
                 };
 
                 console.log(
                     'Enviando votación con duración:',
                     votingData.duration
-                ); // Debug
+                );
                 socket.emit('startVoting', votingData);
+                addSystemActivity(`Votación iniciada: "${votingData.title}"`);
             });
 
+            // Finalizar votación
             endVotingBtn.addEventListener('click', () => {
                 socket.emit('endVoting');
+                addSystemActivity('Votación finalizada manualmente');
 
                 setTimeout(() => {
                     previewFrame.src = previewFrame.src;
                 }, 500);
             });
 
+            // Limpiar actividad
             clearBtn.addEventListener('click', () => {
                 activityList.innerHTML =
                     '<div class="d-flex align-items-center p-2 mb-2 bg-light rounded"><div class="me-2">⚙️</div><div>Esperando actividad...</div></div>';
@@ -457,32 +771,41 @@
                 customCommentOptionInput.value = '';
 
                 previewFrame.src = previewFrame.src;
+                addSystemActivity('Actividad limpiada');
             });
 
+            // Actualizar vista previa
             refreshPreviewBtn.addEventListener('click', () => {
                 previewFrame.src = previewFrame.src;
+                addSystemActivity('Vista previa actualizada');
             });
 
+            // Abrir en nueva ventana
             openNewWindowBtn.addEventListener('click', () => {
                 window.open('/', '_blank');
+                addSystemActivity('Vista abierta en nueva ventana');
             });
 
+            // Controlar simulación
             simToggleBtn.addEventListener('click', () => {
                 simulationActive = !simulationActive;
 
                 if (simulationActive) {
                     socket.emit('startSimulation');
                     simToggleBtn.textContent = 'Detener Simulación';
-                    simToggleBtn.classList.remove('btn-secondary');
+                    simToggleBtn.classList.remove('btn-outline-light');
                     simToggleBtn.classList.add('btn-danger');
+                    addSystemActivity('Simulación de eventos iniciada');
                 } else {
                     socket.emit('stopSimulation');
                     simToggleBtn.textContent = 'Iniciar Simulación';
                     simToggleBtn.classList.remove('btn-danger');
-                    simToggleBtn.classList.add('btn-secondary');
+                    simToggleBtn.classList.add('btn-outline-light');
+                    addSystemActivity('Simulación de eventos detenida');
                 }
             });
 
+            // Guardar votación personalizada
             saveCustomBtn.addEventListener('click', () => {
                 const title =
                     customTitleInput.value || 'Votación personalizada';
@@ -500,14 +823,20 @@
                 addSystemActivity(`Votación personalizada "${title}" guardada`);
             });
 
+            // Seleccionar juego y mostrar plantillas
             gameSelect.addEventListener('change', (e) => {
                 const selectedGame = e.target.value;
                 presetOptions.innerHTML = '';
 
-                if (!selectedGame) return;
+                if (!selectedGame) {
+                    presetOptions.innerHTML =
+                        '<div class="text-muted p-3 text-center">Selecciona un juego para ver las plantillas</div>';
+                    return;
+                }
 
                 if (selectedGame === 'custom') {
                     socket.emit('getCustomVotings');
+                    addSystemActivity('Cargando votaciones personalizadas');
                 } else {
                     fetch(`/api/presets`)
                         .then((response) => response.json())
@@ -520,27 +849,66 @@
                                     const presetItem =
                                         document.createElement('a');
                                     presetItem.className =
-                                        'list-group-item list-group-item-action bg-light text-dark';
-                                    presetItem.innerHTML = `${index + 1}. ${
-                                        preset.title
-                                    }: "${preset.likeOption}" vs "${
+                                        'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                                    presetItem.innerHTML = `
+                                        <div>
+                                            <div class="fw-bold">${
+                                                preset.title
+                                            }</div>
+                                            <div class="small text-muted">❤️ ${
+                                                preset.likeOption
+                                            } vs 💬 ${
                                         preset.commentOption
-                                    }"`;
+                                    }</div>
+                                        </div>
+                                        <span class="badge bg-secondary rounded-pill">${
+                                            index + 1
+                                        }</span>
+                                    `;
                                     presetItem.addEventListener('click', () => {
                                         votingTitleInput.value = preset.title;
                                         likeOptionInput.value =
                                             preset.likeOption;
                                         commentOptionInput.value =
                                             preset.commentOption;
+                                        addSystemActivity(
+                                            `Plantilla cargada: "${preset.title}"`
+                                        );
                                     });
                                     presetOptions.appendChild(presetItem);
                                 });
+                            } else {
+                                presetOptions.innerHTML =
+                                    '<div class="text-muted p-3 text-center">No hay plantillas disponibles para este juego</div>';
                             }
                         })
-                        .catch((err) =>
-                            console.error('Error al cargar presets:', err)
-                        );
+                        .catch((err) => {
+                            console.error('Error al cargar presets:', err);
+                            presetOptions.innerHTML =
+                                '<div class="text-muted p-3 text-center">Error al cargar plantillas</div>';
+                        });
                 }
+            });
+
+            // Iniciar reto del globo
+            startBalloonBtn.addEventListener('click', () => {
+                const balloonConfig = {
+                    target: parseInt(balloonTargetInput.value) || 50,
+                    duration: parseInt(balloonDurationInput.value) || 30,
+                    color: balloonColorSelect.value,
+                };
+
+                socket.emit('startBalloonChallenge', balloonConfig);
+                addSystemActivity(
+                    `Reto del globo iniciado: ${balloonConfig.target} likes en ${balloonConfig.duration} segundos`
+                );
+                playSound('balloonStart');
+            });
+
+            // Finalizar reto del globo
+            endBalloonBtn.addEventListener('click', () => {
+                socket.emit('endBalloonChallenge');
+                addSystemActivity('Reto del globo finalizado manualmente');
             });
 
             function addActivityItem(event) {
@@ -617,9 +985,14 @@
                     ${iconMap[event.type] || '📌'}
                 </div>
                 <div>${content}</div>
-            `;
+                `;
 
                 activityList.insertBefore(div, activityList.firstChild);
+
+                // Actualizar contador de actividad
+                const activityCount = activityList.childElementCount;
+                const badge = document.querySelector('.card-header .badge');
+                badge.textContent = activityCount;
             }
 
             function addSystemActivity(text) {
@@ -683,14 +1056,25 @@
                     customVotings.forEach((voting, index) => {
                         const presetItem = document.createElement('a');
                         presetItem.className =
-                            'list-group-item list-group-item-action bg-light text-dark';
-                        presetItem.innerHTML = `${index + 1}. ${
-                            voting.title
-                        }: "${voting.likeOption}" vs "${voting.commentOption}"`;
+                            'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                        presetItem.innerHTML = `
+                            <div>
+                                <div class="fw-bold">${voting.title}</div>
+                                <div class="small text-muted">❤️ ${
+                                    voting.likeOption
+                                } vs 💬 ${voting.commentOption}</div>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">${
+                                index + 1
+                            }</span>
+                        `;
                         presetItem.addEventListener('click', () => {
                             votingTitleInput.value = voting.title;
                             likeOptionInput.value = voting.likeOption;
                             commentOptionInput.value = voting.commentOption;
+                            addSystemActivity(
+                                `Votación personalizada cargada: "${voting.title}"`
+                            );
                         });
                         presetOptions.appendChild(presetItem);
                     });
@@ -704,6 +1088,40 @@
 
             socket.on('playSound', (soundType) => {
                 playSound(soundType);
+            });
+
+            socket.on('balloonResult', (result) => {
+                if (result.success) {
+                    playSound('balloonSuccess');
+                    addSystemActivity(
+                        `¡Éxito! Reto del globo completado con ${result.likesCount} likes`
+                    );
+                } else {
+                    playSound('balloonFail');
+                    addSystemActivity(
+                        `Reto del globo fallido: ${result.likesCount}/${result.target} likes`
+                    );
+                }
+            });
+
+            socket.on('votingResult', (result) => {
+                let resultMessage = '';
+                if (result.winner === 'likes') {
+                    playSound('winnerLikes');
+                    resultMessage = `¡Ganan los likes! (${result.likesCount} vs ${result.commentsCount})`;
+                } else if (result.winner === 'comments') {
+                    playSound('winnerComments');
+                    resultMessage = `¡Ganan los comentarios! (${result.commentsCount} vs ${result.likesCount})`;
+                } else {
+                    playSound('tie');
+                    resultMessage = `¡Empate! (${result.likesCount} likes vs ${result.commentsCount} comentarios)`;
+                }
+
+                addActivityItem({
+                    id: Date.now(),
+                    type: 'result',
+                    text: resultMessage,
+                });
             });
 
             window.addEventListener('load', () => {
