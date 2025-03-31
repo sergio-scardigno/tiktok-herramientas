@@ -226,6 +226,20 @@
                                 ✨ Personalizar
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button
+                                class="nav-link"
+                                id="banner-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#banner-content"
+                                type="button"
+                                role="tab"
+                                aria-controls="banner-content"
+                                aria-selected="false"
+                            >
+                                🏷️ Banner
+                            </button>
+                        </li>
                     </ul>
 
                     <!-- Contenido de las tabs -->
@@ -503,6 +517,85 @@
                                         <span class="me-1">💾</span> Guardar
                                         Votación
                                     </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenido de Banner -->
+                        <div
+                            class="tab-pane fade"
+                            id="banner-content"
+                            role="tabpanel"
+                            aria-labelledby="banner-tab"
+                        >
+                            <div class="card">
+                                <div class="card-header">
+                                    🏷️ Banners Personalizados
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">
+                                        Crea banners personalizados para mostrar
+                                        mensajes importantes o anuncios.
+                                    </p>
+
+                                    <label for="bannerTitle" class="form-label"
+                                        >Título del Banner:</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control mb-3"
+                                        id="bannerTitle"
+                                        placeholder="Título llamativo"
+                                    />
+
+                                    <label
+                                        for="bannerMessage"
+                                        class="form-label"
+                                        >Mensaje:</label
+                                    >
+                                    <textarea
+                                        class="form-control mb-3"
+                                        id="bannerMessage"
+                                        rows="3"
+                                        placeholder="Escribe aquí tu mensaje..."
+                                    ></textarea>
+
+                                    <div class="mb-3">
+                                        <label
+                                            for="bannerTheme"
+                                            class="form-label"
+                                            >Tema del Banner:</label
+                                        >
+                                        <select
+                                            class="form-select"
+                                            id="bannerTheme"
+                                        >
+                                            <option value="purple" selected>
+                                                Púrpura
+                                            </option>
+                                            <option value="blue">Azul</option>
+                                            <option value="red">Rojo</option>
+                                            <option value="green">Verde</option>
+                                            <option value="dark">Oscuro</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <button
+                                            class="btn btn-primary"
+                                            id="updateBannerBtn"
+                                        >
+                                            <span class="me-1">🎨</span>
+                                            Actualizar Banner
+                                        </button>
+                                        <button
+                                            class="btn btn-secondary"
+                                            id="previewBannerBtn"
+                                        >
+                                            <span class="me-1">👁️</span> Ver
+                                            Banner
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -803,6 +896,35 @@
                     simToggleBtn.classList.add('btn-outline-light');
                     addSystemActivity('Simulación de eventos detenida');
                 }
+            });
+
+            // Elementos del banner
+            const bannerTitleInput = document.getElementById('bannerTitle');
+            const bannerMessageInput = document.getElementById('bannerMessage');
+            const bannerThemeSelect = document.getElementById('bannerTheme');
+            const updateBannerBtn = document.getElementById('updateBannerBtn');
+            const previewBannerBtn =
+                document.getElementById('previewBannerBtn');
+
+            // Actualizar configuración del banner
+            updateBannerBtn.addEventListener('click', () => {
+                const bannerConfig = {
+                    title: bannerTitleInput.value.trim() || 'Título del Banner',
+                    message:
+                        bannerMessageInput.value.trim() ||
+                        'Este es un mensaje de ejemplo para el banner. Configúralo desde el panel de control.',
+                    theme: bannerThemeSelect.value,
+                };
+
+                socket.emit('updateBannerConfig', bannerConfig);
+                addSystemActivity(
+                    `Banner actualizado: "${bannerConfig.title}"`
+                );
+            });
+
+            // Previsualizar banner
+            previewBannerBtn.addEventListener('click', () => {
+                window.open('/banner', '_blank');
             });
 
             // Guardar votación personalizada
@@ -1124,10 +1246,23 @@
                 });
             });
 
+            socket.on('bannerConfig', (config) => {
+                if (bannerTitleInput && config.title) {
+                    bannerTitleInput.value = config.title;
+                }
+                if (bannerMessageInput && config.message) {
+                    bannerMessageInput.value = config.message;
+                }
+                if (bannerThemeSelect && config.theme) {
+                    bannerThemeSelect.value = config.theme;
+                }
+            });
+
             window.addEventListener('load', () => {
                 console.log('Panel de configuración cargado');
                 addSystemActivity('Panel de configuración inicializado');
                 socket.emit('getGameState');
+                socket.emit('getBannerConfig');
             });
         </script>
     </body>

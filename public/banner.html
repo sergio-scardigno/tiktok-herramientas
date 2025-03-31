@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Banner Personalizado Mejorado</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            body {
+                background-color: transparent;
+                font-family: 'Poppins', sans-serif;
+                overflow: hidden;
+                margin: 0;
+                padding: 0;
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .banner-container {
+                position: relative;
+                width: 80%;
+                max-width: 800px;
+                overflow: hidden;
+                perspective: 1000px;
+            }
+
+            .banner {
+                background: linear-gradient(135deg, #6e45e2, #88d3ce);
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                padding: 30px;
+                transform-style: preserve-3d;
+                transition: transform 0.5s ease, box-shadow 0.5s ease;
+                position: relative;
+                overflow: hidden;
+                z-index: 1;
+            }
+
+            .banner:hover {
+                transform: translateY(-10px) rotateX(5deg);
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            }
+
+            .banner-content {
+                position: relative;
+                z-index: 5;
+                transition: transform 0.3s ease;
+                overflow: hidden; /* Para contener el texto que se desplaza */
+                width: 100%;
+            }
+
+            .banner:hover .banner-content {
+                transform: translateZ(20px);
+            }
+
+            /* Contenedor para texto desplazable */
+            .scrolling-text-container {
+                width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+                position: relative;
+            }
+
+            .banner-title {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: white;
+                text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+                margin-bottom: 0.5rem;
+                position: relative;
+                white-space: nowrap;
+                display: inline-block;
+                animation: scrollTitle 15s linear infinite,
+                    titlePulse 3s infinite alternate;
+            }
+
+            @keyframes titlePulse {
+                0% {
+                    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+                }
+                100% {
+                    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8),
+                        0 0 30px rgba(255, 255, 255, 0.4);
+                }
+            }
+
+            @keyframes scrollTitle {
+                0% {
+                    transform: translateX(100%);
+                }
+                100% {
+                    transform: translateX(-100%);
+                }
+            }
+
+            .banner-message {
+                font-size: 1.25rem;
+                color: rgba(255, 255, 255, 0.9);
+                margin-bottom: 1rem;
+                line-height: 1.5;
+                position: relative;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+                display: inline-block;
+                animation: scrollMessage 20s linear infinite;
+            }
+
+            .banner:hover .banner-message {
+                color: rgba(255, 255, 255, 1);
+                animation-play-state: paused; /* Pausa la animación al pasar el ratón */
+            }
+
+            @keyframes scrollMessage {
+                0% {
+                    transform: translateX(100%);
+                }
+                100% {
+                    transform: translateX(-100%);
+                }
+            }
+
+            .banner-shape {
+                position: absolute;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(5px);
+                z-index: 2;
+                transition: all 0.5s ease;
+            }
+
+            .banner:hover .banner-shape {
+                background-color: rgba(255, 255, 255, 0.15);
+            }
+
+            .shape-1 {
+                width: 120px;
+                height: 120px;
+                bottom: -30px;
+                left: -30px;
+            }
+
+            .shape-2 {
+                width: 170px;
+                height: 170px;
+                top: -60px;
+                right: -40px;
+            }
+
+            .shape-3 {
+                width: 80px;
+                height: 80px;
+                top: 50%;
+                left: 25%;
+            }
+
+            /* Nuevas formas adicionales */
+            .shape-4 {
+                width: 60px;
+                height: 60px;
+                bottom: 20%;
+                right: 15%;
+                background-color: rgba(255, 255, 255, 0.08);
+            }
+
+            .shape-5 {
+                width: 40px;
+                height: 40px;
+                top: 30%;
+                right: 30%;
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+
+            /* Partículas flotantes */
+            .particles {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: 1;
+                overflow: hidden;
+            }
+
+            .particle {
+                position: absolute;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.4);
+                pointer-events: none;
+            }
+
+            /* Temas predefinidos con efectos mejorados */
+            .theme-blue {
+                background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+                background-size: 400% 400%;
+                animation: gradientShift 15s ease infinite;
+            }
+
+            .theme-purple {
+                background: linear-gradient(135deg, #6e45e2, #88d3ce);
+                background-size: 400% 400%;
+                animation: gradientShift 15s ease infinite;
+            }
+
+            .theme-red {
+                background: linear-gradient(135deg, #ff416c, #ff4b2b);
+                background-size: 400% 400%;
+                animation: gradientShift 15s ease infinite;
+            }
+
+            .theme-green {
+                background: linear-gradient(135deg, #43c6ac, #f8ffae);
+                background-size: 400% 400%;
+                animation: gradientShift 15s ease infinite;
+            }
+
+            .theme-dark {
+                background: linear-gradient(135deg, #232526, #414345);
+                background-size: 400% 400%;
+                animation: gradientShift 15s ease infinite;
+            }
+
+            @keyframes gradientShift {
+                0% {
+                    background-position: 0% 50%;
+                }
+                50% {
+                    background-position: 100% 50%;
+                }
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            @keyframes float {
+                0% {
+                    transform: translateY(0) rotate(0deg) scale(1);
+                }
+                50% {
+                    transform: translateY(-15px) rotate(5deg) scale(1.05);
+                }
+                100% {
+                    transform: translateY(0) rotate(0deg) scale(1);
+                }
+            }
+
+            @keyframes floatReverse {
+                0% {
+                    transform: translateY(0) rotate(0deg) scale(1);
+                }
+                50% {
+                    transform: translateY(15px) rotate(-5deg) scale(1.05);
+                }
+                100% {
+                    transform: translateY(0) rotate(0deg) scale(1);
+                }
+            }
+
+            @keyframes floatSide {
+                0% {
+                    transform: translateX(0) translateY(0) rotate(0deg);
+                }
+                50% {
+                    transform: translateX(-10px) translateY(-5px) rotate(3deg);
+                }
+                100% {
+                    transform: translateX(0) translateY(0) rotate(0deg);
+                }
+            }
+
+            .shape-1 {
+                animation: float 8s ease-in-out infinite;
+            }
+
+            .shape-2 {
+                animation: floatReverse 9s ease-in-out infinite;
+            }
+
+            .shape-3 {
+                animation: float 7s ease-in-out infinite;
+            }
+
+            .shape-4 {
+                animation: floatSide 6s ease-in-out infinite;
+            }
+
+            .shape-5 {
+                animation: floatReverse 10s ease-in-out infinite;
+            }
+
+            /* Efecto de brillo del banner */
+            .banner::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(
+                    circle,
+                    rgba(255, 255, 255, 0.1) 0%,
+                    rgba(255, 255, 255, 0) 60%
+                );
+                opacity: 0;
+                z-index: 3;
+                transform: rotate(30deg);
+                transition: opacity 0.5s ease;
+                pointer-events: none;
+            }
+
+            .banner:hover::before {
+                opacity: 1;
+                animation: shimmer 2s infinite;
+            }
+
+            @keyframes shimmer {
+                0% {
+                    transform: rotate(30deg) translateY(0%);
+                    opacity: 0.5;
+                }
+                100% {
+                    transform: rotate(30deg) translateY(20%);
+                    opacity: 0;
+                }
+            }
+
+            /* Efecto de aparición de texto */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="banner-container">
+            <div id="banner" class="banner theme-purple">
+                <div class="particles" id="particles"></div>
+                <div class="banner-shape shape-1"></div>
+                <div class="banner-shape shape-2"></div>
+                <div class="banner-shape shape-3"></div>
+                <div class="banner-shape shape-4"></div>
+                <div class="banner-shape shape-5"></div>
+                <div class="banner-content">
+                    <div class="scrolling-text-container">
+                        <h1 id="bannerTitle" class="banner-title">
+                            Título del Banner
+                        </h1>
+                    </div>
+                    <div class="scrolling-text-container">
+                        <p id="bannerMessage" class="banner-message">
+                            Este es un mensaje de ejemplo para el banner.
+                            Configúralo desde el panel de control.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+            const banner = document.getElementById('banner');
+            const bannerTitle = document.getElementById('bannerTitle');
+            const bannerMessage = document.getElementById('bannerMessage');
+            const particlesContainer = document.getElementById('particles');
+
+            // Crear partículas flotantes
+            function createParticles() {
+                const count = 15; // Número de partículas
+
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+
+                    // Posición aleatoria
+                    const posX = Math.random() * 100;
+                    const posY = Math.random() * 100;
+                    particle.style.left = `${posX}%`;
+                    particle.style.top = `${posY}%`;
+
+                    // Tamaño aleatorio
+                    const size = Math.random() * 6 + 3;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+
+                    // Opacidad aleatoria
+                    particle.style.opacity = Math.random() * 0.5 + 0.2;
+
+                    // Animación
+                    const duration = Math.random() * 20 + 10;
+                    const delay = Math.random() * 5;
+
+                    particle.style.animation = `float ${duration}s ${delay}s infinite alternate`;
+
+                    particlesContainer.appendChild(particle);
+                }
+            }
+
+            // Efecto 3D de seguimiento del ratón
+            function init3DEffect() {
+                const container = document.querySelector('.banner-container');
+
+                container.addEventListener('mousemove', (e) => {
+                    const xVal = e.layerX;
+                    const yVal = e.layerY;
+                    const xRotation =
+                        20 *
+                        ((yVal - container.clientHeight / 2) /
+                            container.clientHeight);
+                    const yRotation =
+                        -20 *
+                        ((xVal - container.clientWidth / 2) /
+                            container.clientWidth);
+
+                    banner.style.transform = `perspective(1000px) rotateX(${xRotation}deg) rotateY(${yRotation}deg) scale3d(1.05, 1.05, 1.05)`;
+                });
+
+                container.addEventListener('mouseout', () => {
+                    banner.style.transform =
+                        'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                });
+            }
+
+            // Inicializar efectos
+            createParticles();
+            init3DEffect();
+
+            // Socket.io lógica
+            socket.on('connect', () => {
+                console.log('Socket conectado con ID:', socket.id);
+                socket.emit('getBannerConfig');
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Socket desconectado');
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Error de conexión:', error);
+            });
+
+            // Recibir actualizaciones del banner
+            socket.on('bannerConfig', (config) => {
+                console.log('Recibida configuración del banner:', config);
+
+                if (config) {
+                    if (config.title) {
+                        console.log('Actualizando título a:', config.title);
+                        bannerTitle.textContent = config.title;
+                        // Reiniciar animación
+                        bannerTitle.style.animation = 'none';
+                        setTimeout(() => {
+                            bannerTitle.style.animation =
+                                'scrollTitle 15s linear infinite, titlePulse 3s infinite alternate';
+                        }, 10);
+                    }
+
+                    if (config.message) {
+                        console.log('Actualizando mensaje a:', config.message);
+                        bannerMessage.textContent = config.message;
+                        // Reiniciar animación
+                        bannerMessage.style.animation = 'none';
+                        setTimeout(() => {
+                            bannerMessage.style.animation =
+                                'scrollMessage 20s linear infinite';
+                        }, 10);
+                    }
+
+                    if (config.theme) {
+                        console.log('Actualizando tema a:', config.theme);
+                        // Eliminar temas anteriores
+                        banner.classList.remove(
+                            'theme-purple',
+                            'theme-blue',
+                            'theme-red',
+                            'theme-green',
+                            'theme-dark'
+                        );
+                        // Añadir el nuevo tema
+                        banner.classList.add(`theme-${config.theme}`);
+                    }
+                } else {
+                    console.error(
+                        'La configuración recibida es inválida:',
+                        config
+                    );
+                }
+            });
+        </script>
+    </body>
+</html>

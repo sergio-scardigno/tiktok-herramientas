@@ -43,6 +43,13 @@ const gameConfig = {
         startTime: null,
         color: '#ff4d4d',
     },
+    // Configuración del banner personalizado
+    bannerConfig: {
+        title: 'Bienvenido al Stream',
+        message:
+            'Gracias por unirte. ¡No olvides seguirme y activar las notificaciones!',
+        theme: 'purple',
+    },
 };
 
 // Game presets
@@ -119,6 +126,10 @@ app.get('/configuracion', (req, res) =>
 // Ruta para el overlay del globo
 app.get('/ballon', (req, res) =>
     res.sendFile(path.join(__dirname, 'public', 'ballon.html'))
+);
+
+app.get('/banner', (req, res) =>
+    res.sendFile(path.join(__dirname, 'public', 'banner.html'))
 );
 
 // API routes
@@ -245,6 +256,39 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('Cliente desconectado:', socket.id);
+    });
+
+    socket.on('getBannerConfig', () => {
+        console.log(
+            'Cliente solicitó configuración del banner. Enviando:',
+            gameConfig.bannerConfig
+        );
+        socket.emit('bannerConfig', gameConfig.bannerConfig);
+    });
+
+    socket.on('updateBannerConfig', (config) => {
+        console.log('Recibida solicitud para actualizar banner:', config);
+
+        gameConfig.bannerConfig = {
+            title: config.title || 'Título del Banner',
+            message:
+                config.message ||
+                'Este es un mensaje de ejemplo para el banner. Configúralo desde el panel de control.',
+            theme: config.theme || 'purple',
+        };
+
+        console.log(
+            'Banner actualizado. Nueva configuración:',
+            gameConfig.bannerConfig
+        );
+
+        // Emitir a todos los clientes conectados
+        io.emit('bannerConfig', gameConfig.bannerConfig);
+
+        addRecentEvent({
+            type: 'system',
+            text: `Banner actualizado: "${config.title}"`,
+        });
     });
 });
 
@@ -566,8 +610,12 @@ function endBalloonChallenge(success = false) {
 
     // Reproducir sonido dependiendo del resultado
     io.emit('playSound', success ? 'balloonSuccess' : 'balloonFail');
-}
 
+    // Send updated game state to all clients (not to a specific socket)
+    io.emit('gameState', gameConfig);
+    // Also emit banner config to all clients
+    io.emit('bannerConfig', gameConfig.bannerConfig);
+}
 // Start server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
