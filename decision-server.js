@@ -50,7 +50,104 @@ const gameConfig = {
             'Gracias por unirte. ¡No olvides seguirme y activar las notificaciones!',
         theme: 'purple',
     },
+    // Configuración actualizada para advertising
+    advertisingConfig: {
+        videos: [
+            {
+                path: 'videos/publicidad.mp4',
+                name: 'Promoción Canal 1',
+            },
+            // {
+            //     path: 'videos/publicidad1.mp4',
+            //     name: 'Promoción Canal 2',
+            // },
+            // {
+            //     path: 'videos/publicidad2.mp4',
+            //     name: 'Promoción Canal 3',
+            // },
+            // Puedes agregar más videos aquí si es necesario
+        ],
+        autoRotate: true,
+        rotationInterval: 10 * 60 * 1000, // Cambiado a 1 minuto para facilitar pruebas
+    },
 };
+
+// Verificar si los archivos de video existen
+function checkMediaFiles() {
+    console.log('Verificando archivos de medios...');
+
+    // Verificar directorio de videos
+    const videoDir = path.join(__dirname, 'public', 'videos');
+    if (!fs.existsSync(videoDir)) {
+        console.log('⚠️ El directorio videos no existe. Creándolo...');
+        try {
+            fs.mkdirSync(videoDir, { recursive: true });
+            console.log('✅ Directorio videos creado en: ' + videoDir);
+        } catch (err) {
+            console.error('❌ Error al crear directorio de videos:', err);
+        }
+    } else {
+        console.log('✅ Directorio de videos encontrado en: ' + videoDir);
+    }
+
+    // Verificar archivos de video
+    gameConfig.advertisingConfig.videos.forEach((video) => {
+        const videoPath = path.join(__dirname, 'public', video.path);
+        if (fs.existsSync(videoPath)) {
+            console.log(`✅ Video encontrado: ${video.path}`);
+        } else {
+            console.log(`❌ Video NO encontrado: ${video.path}`);
+
+            // Si falta el archivo, intentar buscar otros formatos
+            const altFormats = ['.mp4', '.webm', '.mov'];
+            let foundAlternative = false;
+
+            for (const format of altFormats) {
+                const baseName = video.path.substring(
+                    0,
+                    video.path.lastIndexOf('.')
+                );
+                const altPath = path.join(
+                    __dirname,
+                    'public',
+                    baseName + format
+                );
+
+                if (fs.existsSync(altPath)) {
+                    console.log(
+                        `✅ Encontrado formato alternativo: ${
+                            baseName + format
+                        }`
+                    );
+                    // Actualizar la ruta en la configuración
+                    video.path = baseName + format;
+                    foundAlternative = true;
+                    break;
+                }
+            }
+
+            if (!foundAlternative) {
+                console.log(
+                    `⚠️ No se encontraron alternativas para ${video.path}. Asegúrate de tener un video en la carpeta videos.`
+                );
+                // Crear un archivo de video de ejemplo si no existe ninguno
+                try {
+                    if (!fs.existsSync(path.join(videoDir, 'ejemplo.mp4'))) {
+                        // Mensaje informativo - realmente necesitarías crear el video manualmente
+                        console.log(
+                            "ℹ️ Por favor, agrega manualmente archivos de video en formato MP4 a la carpeta 'public/videos/'"
+                        );
+                    }
+                } catch (err) {
+                    console.error(
+                        'Error al verificar archivo de ejemplo:',
+                        err
+                    );
+                }
+            }
+        }
+    });
+}
 
 // Game presets
 const gamePresets = [
@@ -108,6 +205,8 @@ try {
 
 // Static files and routes
 app.use(express.static(path.join(__dirname, 'public')));
+// Ruta específica para videos
+app.use('/videos', express.static(path.join(__dirname, 'public', 'videos')));
 
 // Ruta principal que ahora muestra index.html como página de navegación
 app.get('/', (req, res) =>
@@ -130,6 +229,11 @@ app.get('/ballon', (req, res) =>
 
 app.get('/banner', (req, res) =>
     res.sendFile(path.join(__dirname, 'public', 'banner.html'))
+);
+
+// Agregar la nueva ruta para advertising
+app.get('/advertising', (req, res) =>
+    res.sendFile(path.join(__dirname, 'public', 'advertising.html'))
 );
 
 // API routes
@@ -289,6 +393,32 @@ io.on('connection', (socket) => {
             type: 'system',
             text: `Banner actualizado: "${config.title}"`,
         });
+    });
+
+    // En la parte donde se manejan los eventos de Socket.io, agregar:
+    socket.on('getAdvertisingConfig', () => {
+        console.log('Cliente solicitó configuración de advertising');
+        socket.emit('advertisingConfig', gameConfig.advertisingConfig);
+    });
+
+    // Agregar manejador para actualizar configuración de advertising
+    socket.on('updateAdvertisingConfig', (config) => {
+        console.log('Recibida solicitud para actualizar advertising:', config);
+
+        if (config) {
+            gameConfig.advertisingConfig = {
+                ...gameConfig.advertisingConfig,
+                ...config,
+            };
+
+            // Notificar a todos los clientes
+            io.emit('advertisingConfig', gameConfig.advertisingConfig);
+
+            addRecentEvent({
+                type: 'system',
+                text: `Configuración de advertising actualizada`,
+            });
+        }
     });
 });
 
@@ -616,6 +746,10 @@ function endBalloonChallenge(success = false) {
     // Also emit banner config to all clients
     io.emit('bannerConfig', gameConfig.bannerConfig);
 }
+
+// Llamar a la función de verificación de archivos al inicio
+checkMediaFiles();
+
 // Start server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

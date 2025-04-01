@@ -240,6 +240,21 @@
                                 🏷️ Banner
                             </button>
                         </li>
+                        <!-- Agregar una nueva pestaña para Advertising -->
+                        <li class="nav-item" role="presentation">
+                            <button
+                                class="nav-link"
+                                id="advertising-tab"
+                                data-bs-toggle="tab"
+                                data-bs-target="#advertising-content"
+                                type="button"
+                                role="tab"
+                                aria-controls="advertising-content"
+                                aria-selected="false"
+                            >
+                                📺 Advertising
+                            </button>
+                        </li>
                     </ul>
 
                     <!-- Contenido de las tabs -->
@@ -594,6 +609,170 @@
                                         >
                                             <span class="me-1">👁️</span> Ver
                                             Banner
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contenido de la pestaña de Advertising -->
+                        <div
+                            class="tab-pane fade"
+                            id="advertising-content"
+                            role="tabpanel"
+                            aria-labelledby="advertising-tab"
+                        >
+                            <div class="card">
+                                <div class="card-header">
+                                    📺 Videos Publicitarios
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">
+                                        Configura videos publicitarios que se
+                                        reproducirán automáticamente cada 10
+                                        minutos.
+                                    </p>
+
+                                    <div class="mb-3">
+                                        <label
+                                            for="videoInterval"
+                                            class="form-label"
+                                        >
+                                            <span class="me-1">⏱️</span>
+                                            Intervalo de rotación:
+                                        </label>
+                                        <div class="d-flex align-items-center">
+                                            <input
+                                                type="range"
+                                                class="form-range me-2"
+                                                id="videoInterval"
+                                                value="10"
+                                                min="1"
+                                                max="30"
+                                                step="1"
+                                                oninput="videoIntervalValue.textContent = this.value"
+                                            />
+                                            <span id="videoIntervalValue"
+                                                >10</span
+                                            >
+                                            <span class="ms-1">minutos</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-check form-switch">
+                                            <input
+                                                type="checkbox"
+                                                class="form-check-input"
+                                                id="autoRotateVideos"
+                                                checked
+                                            />
+                                            <span class="form-check-label"
+                                                >Rotar videos
+                                                automáticamente</span
+                                            >
+                                        </label>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label"
+                                            >Videos configurados:</label
+                                        >
+                                        <div class="list-group" id="videosList">
+                                            <!-- Los videos se cargarán dinámicamente aquí -->
+                                            <div
+                                                class="list-group-item d-flex justify-content-between align-items-center"
+                                            >
+                                                <div>
+                                                    <span class="fw-bold"
+                                                        >Promoción Canal</span
+                                                    >
+                                                    <div
+                                                        class="small text-muted"
+                                                    >
+                                                        videos/promo1.mov
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    class="btn btn-sm btn-danger"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                            <div
+                                                class="list-group-item d-flex justify-content-between align-items-center"
+                                            >
+                                                <div>
+                                                    <span class="fw-bold"
+                                                        >Patrocinador 1</span
+                                                    >
+                                                    <div
+                                                        class="small text-muted"
+                                                    >
+                                                        videos/sponsor1.mov
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    class="btn btn-sm btn-danger"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3 border p-3 rounded">
+                                        <h6>Agregar nuevo video</h6>
+                                        <div class="mb-2">
+                                            <label
+                                                for="videoName"
+                                                class="form-label"
+                                                >Nombre:</label
+                                            >
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="videoName"
+                                                placeholder="Ej: Promoción Canal"
+                                            />
+                                        </div>
+                                        <div class="mb-2">
+                                            <label
+                                                for="videoPath"
+                                                class="form-label"
+                                                >Ruta del archivo (mp4, webm,
+                                                mov):</label
+                                            >
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="videoPath"
+                                                placeholder="Ej: videos/promocion.mp4"
+                                            />
+                                        </div>
+                                        <button
+                                            class="btn btn-primary w-100 mt-2"
+                                            id="addVideoBtn"
+                                        >
+                                            <span class="me-1">➕</span> Agregar
+                                            Video
+                                        </button>
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <button
+                                            class="btn btn-primary"
+                                            id="updateAdvertisingBtn"
+                                        >
+                                            <span class="me-1">💾</span> Guardar
+                                            Configuración
+                                        </button>
+                                        <button
+                                            class="btn btn-secondary"
+                                            id="previewAdvertisingBtn"
+                                        >
+                                            <span class="me-1">👁️</span> Ver
+                                            Advertising
                                         </button>
                                     </div>
                                 </div>
@@ -1263,6 +1442,157 @@
                 addSystemActivity('Panel de configuración inicializado');
                 socket.emit('getGameState');
                 socket.emit('getBannerConfig');
+            });
+        </script>
+
+        <script>
+            // Variables para advertising
+            const videoInterval = document.getElementById('videoInterval');
+            const autoRotateVideos =
+                document.getElementById('autoRotateVideos');
+            const videosList = document.getElementById('videosList');
+            const videoName = document.getElementById('videoName');
+            const videoPath = document.getElementById('videoPath');
+            const addVideoBtn = document.getElementById('addVideoBtn');
+            const updateAdvertisingBtn = document.getElementById(
+                'updateAdvertisingBtn'
+            );
+            const previewAdvertisingBtn = document.getElementById(
+                'previewAdvertisingBtn'
+            );
+
+            let advertisingVideos = [];
+
+            // Recibir configuración de advertising
+            socket.on('advertisingConfig', (config) => {
+                if (config) {
+                    if (videoInterval) {
+                        const minutes = Math.floor(
+                            config.rotationInterval / (60 * 1000)
+                        );
+                        videoInterval.value = minutes;
+                        document.getElementById(
+                            'videoIntervalValue'
+                        ).textContent = minutes;
+                    }
+
+                    if (autoRotateVideos) {
+                        autoRotateVideos.checked = config.autoRotate !== false;
+                    }
+
+                    if (config.videos && Array.isArray(config.videos)) {
+                        advertisingVideos = [...config.videos];
+                        updateVideosList();
+                    }
+                }
+            });
+
+            // Actualizar la lista de videos en la interfaz
+            function updateVideosList() {
+                if (!videosList) return;
+
+                videosList.innerHTML = '';
+
+                if (advertisingVideos.length === 0) {
+                    videosList.innerHTML =
+                        '<div class="text-muted p-3 text-center">No hay videos configurados</div>';
+                    return;
+                }
+
+                advertisingVideos.forEach((video, index) => {
+                    const listItem = document.createElement('div');
+                    listItem.className =
+                        'list-group-item d-flex justify-content-between align-items-center';
+                    listItem.innerHTML = `
+                <div>
+                    <span class="fw-bold">${
+                        video.name || 'Video sin nombre'
+                    }</span>
+                    <div class="small text-muted">${video.path}</div>
+                </div>
+                <button class="btn btn-sm btn-danger delete-video" data-index="${index}">🗑️</button>
+            `;
+                    videosList.appendChild(listItem);
+                });
+
+                // Agregar event listeners para los botones de eliminar
+                document.querySelectorAll('.delete-video').forEach((btn) => {
+                    btn.addEventListener('click', (e) => {
+                        const index = parseInt(e.target.dataset.index);
+                        advertisingVideos.splice(index, 1);
+                        updateVideosList();
+                    });
+                });
+            }
+
+            // Agregar nuevo video
+            if (addVideoBtn) {
+                addVideoBtn.addEventListener('click', () => {
+                    const name = videoName.value.trim();
+                    const path = videoPath.value.trim();
+
+                    if (!path) {
+                        alert(
+                            'Por favor, ingresa la ruta del archivo de video'
+                        );
+                        return;
+                    }
+
+                    // Validar que sea un formato de video válido
+                    const validExtensions = ['.mp4', '.webm', '.mov'];
+                    const hasValidExtension = validExtensions.some((ext) =>
+                        path.toLowerCase().endsWith(ext)
+                    );
+
+                    if (!hasValidExtension) {
+                        alert(
+                            'Por favor, ingresa un archivo con extensión válida (.mp4, .webm, .mov)'
+                        );
+                        return;
+                    }
+
+                    advertisingVideos.push({
+                        name: name || `Video ${advertisingVideos.length + 1}`,
+                        path: path,
+                    });
+
+                    videoName.value = '';
+                    videoPath.value = '';
+
+                    updateVideosList();
+                    addSystemActivity(
+                        `Video "${name}" agregado a la configuración de advertising`
+                    );
+                });
+            }
+
+            // Actualizar configuración
+            if (updateAdvertisingBtn) {
+                updateAdvertisingBtn.addEventListener('click', () => {
+                    const config = {
+                        videos: advertisingVideos,
+                        autoRotate: autoRotateVideos.checked,
+                        rotationInterval:
+                            parseInt(videoInterval.value) * 60 * 1000, // Convertir a milisegundos
+                    };
+
+                    socket.emit('updateAdvertisingConfig', config);
+                    addSystemActivity(
+                        'Configuración de advertising actualizada'
+                    );
+                });
+            }
+
+            // Previsualizar advertising
+            if (previewAdvertisingBtn) {
+                previewAdvertisingBtn.addEventListener('click', () => {
+                    window.open('/advertising', '_blank');
+                });
+            }
+
+            // Solicitar configuración inicial
+            document.addEventListener('DOMContentLoaded', () => {
+                socket.emit('getAdvertisingConfig');
             });
         </script>
     </body>

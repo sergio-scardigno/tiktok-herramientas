@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TikTok Decision Maker - Advertising</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            body {
+                background-color: transparent;
+                font-family: 'Poppins', sans-serif;
+                overflow: hidden;
+                margin: 0;
+                padding: 0;
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .advertising-container {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+                background-color: #00ff00; /* Keeping the same green background */
+            }
+
+            /* FIXED: Ensure video containers take full width and maintain aspect ratio */
+            .video-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                opacity: 0;
+                transition: opacity 1s ease-in-out;
+                z-index: 0;
+                background-color: #00ff00; /* Added to ensure consistent background */
+            }
+
+            .video-container.active {
+                opacity: 1;
+                z-index: 1;
+            }
+
+            /* FIXED: Made video background consistent with container */
+            video {
+                width: 100%;
+                height: 100%;
+                object-fit: contain; /* This preserves aspect ratio */
+                background-color: #00ff00;
+                z-index: 10;
+            }
+
+            .controls {
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                z-index: 2000;
+                background-color: rgba(0, 0, 0, 0.7);
+                padding: 10px;
+                border-radius: 10px;
+                display: flex;
+                gap: 10px;
+                opacity: 0.8;
+                transition: opacity 0.3s ease;
+            }
+
+            .controls:hover {
+                opacity: 1;
+            }
+
+            .btn-control {
+                background-color: #fe2c55;
+                border: none;
+                color: white;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                font-size: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .btn-control:hover {
+                background-color: #e6254c;
+                transform: scale(1.1);
+            }
+
+            .video-info {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 10px 15px;
+                border-radius: 10px;
+                font-size: 14px;
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                opacity: 1;
+                transition: opacity 0.3s ease;
+            }
+
+            .video-info:hover {
+                opacity: 0;
+            }
+
+            .next-video-timer {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .progress-container {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background-color: rgba(0, 0, 0, 0);
+                z-index: 2000;
+            }
+
+            .progress-bar {
+                height: 100%;
+                background-color: #fe2c55;
+                width: 0%;
+                transition: width 0.3s linear;
+            }
+
+            .hidden {
+                display: none !important;
+            }
+
+            /* FIXED: Added background to waiting screen matching the main background */
+            .waiting-screen {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: #00ff00;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 3000;
+                pointer-events: none;
+                display: none;
+            }
+
+            .waiting-screen.active {
+                pointer-events: auto;
+                display: none;
+            }
+
+            .countdown {
+                font-size: 1.5rem;
+                font-weight: normal;
+                color: rgba(255, 255, 255, 0.7);
+                position: absolute;
+                bottom: 50%;
+                left: 50%;
+                transform: translate(-50%, 50%);
+                padding: 10px 20px;
+                border-radius: 5px;
+                background-color: rgba(0, 0, 0, 0);
+                display: none;
+            }
+
+            .play-message {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                font-size: 1.2rem;
+                text-align: center;
+                z-index: 2500;
+                cursor: pointer;
+                pointer-events: auto;
+            }
+
+            .debug-panel {
+                position: fixed;
+                bottom: 10px;
+                left: 10px;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                font-size: 12px;
+                z-index: 9999;
+                max-width: 80%;
+                max-height: 30%;
+                overflow-y: auto;
+                display: none;
+            }
+
+            .waiting-screen {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="advertising-container">
+            <div class="waiting-screen" id="waitingScreen">
+                <div class="countdown hidden" id="waitingCountdown">01:00</div>
+            </div>
+
+            <div class="video-info hidden">
+                <div>
+                    <span id="currentVideoName">Video</span>
+                    <span id="videoCounter">1/3</span>
+                </div>
+                <div class="next-video-timer">
+                    <span>Próximo:</span>
+                    <span id="nextVideoTimer">01:00</span>
+                </div>
+            </div>
+
+            <div class="progress-container hidden">
+                <div class="progress-bar" id="videoProgress"></div>
+            </div>
+
+            <div class="controls hidden">
+                <button class="btn-control" id="prevBtn" title="Anterior">
+                    ⏮
+                </button>
+                <button
+                    class="btn-control"
+                    id="playPauseBtn"
+                    title="Reproducir/Pausar"
+                >
+                    ⏯
+                </button>
+                <button class="btn-control" id="nextBtn" title="Siguiente">
+                    ⏭
+                </button>
+                <button class="btn-control" id="muteBtn" title="Silenciar">
+                    🔊
+                </button>
+            </div>
+
+            <div id="videoContainers"></div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            let debugVisible = false;
+            const debugPanel = document.getElementById('debugPanel');
+            const debugContent = document.getElementById('debugContent');
+
+            function toggleDebug() {
+                debugVisible = !debugVisible;
+                if (debugPanel) {
+                    debugPanel.style.display = debugVisible ? 'block' : 'none';
+                }
+            }
+
+            function log(message) {
+                console.log(message);
+                if (debugContent) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    const msgElement = document.createElement('div');
+                    msgElement.innerHTML = `<span style="color:#aaa">${timestamp}</span> ${message}`;
+                    debugContent.appendChild(msgElement);
+                    debugContent.scrollTop = debugContent.scrollHeight;
+                    if (debugContent.children.length > 50) {
+                        debugContent.removeChild(debugContent.firstChild);
+                    }
+                }
+            }
+
+            const DEFAULT_ROTATION_INTERVAL = 60 * 1000;
+            let ROTATION_INTERVAL = DEFAULT_ROTATION_INTERVAL;
+            let rotationTimer = null;
+            let timeRemaining = ROTATION_INTERVAL;
+            let currentVideoIndex = 0;
+            let videos = [];
+            let isPlaying = false;
+            let isMuted = false;
+            let isWaiting = true;
+            let autoRotate = true;
+
+            const videoContainers = document.getElementById('videoContainers');
+            const videoProgress = document.getElementById('videoProgress');
+            const currentVideoName =
+                document.getElementById('currentVideoName');
+            const videoCounter = document.getElementById('videoCounter');
+            const nextVideoTimer = document.getElementById('nextVideoTimer');
+            const prevBtn = document.getElementById('prevBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const muteBtn = document.getElementById('muteBtn');
+            const waitingScreen = document.getElementById('waitingScreen');
+            const waitingCountdown =
+                document.getElementById('waitingCountdown');
+            const progressContainer = document.querySelector(
+                '.progress-container'
+            );
+            const videoInfo = document.querySelector('.video-info');
+            const controls = document.querySelector('.controls');
+
+            const socket = io();
+
+            socket.on('connect', () => {
+                log('Socket conectado: ' + socket.id);
+                socket.emit('getAdvertisingConfig');
+            });
+
+            socket.on('advertisingConfig', (config) => {
+                log(
+                    'Configuración de advertising recibida: ' +
+                        JSON.stringify(config)
+                );
+                if (config && config.rotationInterval) {
+                    ROTATION_INTERVAL = config.rotationInterval;
+                    log(
+                        `Intervalo de rotación configurado: ${
+                            ROTATION_INTERVAL / 1000
+                        } segundos`
+                    );
+                    timeRemaining = ROTATION_INTERVAL;
+                    updateTimerDisplay();
+                }
+
+                if (config && config.autoRotate !== undefined) {
+                    autoRotate = config.autoRotate;
+                    log(
+                        `Auto-rotación: ${
+                            autoRotate ? 'Activada' : 'Desactivada'
+                        }`
+                    );
+                }
+
+                videoContainers.innerHTML = '';
+
+                if (config && config.videos && config.videos.length > 0) {
+                    videos = config.videos;
+                    log('Videos disponibles: ' + videos.length);
+                    setupVideos();
+                    startRotation();
+                } else {
+                    log(
+                        'No hay videos configurados. Usando videos de demostración.'
+                    );
+                    videos = [
+                        {
+                            path: 'videos/publicidad.mp4',
+                            name: 'Demo Video',
+                        },
+                    ];
+                    setupVideos();
+                    startRotation();
+                }
+            });
+
+            window.addEventListener('load', function () {
+                log(
+                    'Página cargada. Verificando compatibilidad de formatos de video...'
+                );
+                const video = document.createElement('video');
+                log(
+                    `Formato MP4: ${
+                        video.canPlayType('video/mp4') || 'no soportado'
+                    }`
+                );
+                log(
+                    `Formato WebM: ${
+                        video.canPlayType('video/webm') || 'no soportado'
+                    }`
+                );
+                log(
+                    `Formato MOV: ${
+                        video.canPlayType('video/quicktime') || 'no soportado'
+                    }`
+                );
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === ' ' || e.key === 'Spacebar') {
+                        togglePlayPause();
+                    } else if (e.key === 'ArrowLeft') {
+                        prevVideo();
+                    } else if (e.key === 'ArrowRight') {
+                        nextVideo();
+                    } else if (e.key === 'm' || e.key === 'M') {
+                        toggleMute();
+                    } else if (e.key === 'd' || e.key === 'D') {
+                        toggleDebug();
+                    }
+                });
+            });
+
+            function setupVideos() {
+                log('Configurando videos: ' + JSON.stringify(videos));
+                videos.forEach((video, index) => {
+                    log(`Configurando video ${index}: ${video.path}`);
+
+                    const container = document.createElement('div');
+                    container.className = `video-container`;
+                    container.id = `video-container-${index}`;
+
+                    const videoElement = document.createElement('video');
+                    videoElement.id = `video-${index}`;
+                    videoElement.loop = false;
+                    videoElement.preload = 'auto';
+                    videoElement.muted = isMuted;
+                    videoElement.playsInline = true;
+                    videoElement.crossOrigin = 'anonymous';
+                    videoElement.autoplay = true;
+
+                    const originalPath = video.path;
+                    const lastDot = originalPath.lastIndexOf('.');
+                    const fileExtension =
+                        lastDot !== -1 ? originalPath.substring(lastDot) : '';
+                    const basePath =
+                        lastDot !== -1
+                            ? originalPath.substring(0, lastDot)
+                            : originalPath;
+
+                    log(
+                        `Extensión detectada: ${fileExtension}, Ruta base: ${basePath}`
+                    );
+
+                    try {
+                        videoElement.src = originalPath;
+                        log(`Configurando fuente principal: ${originalPath}`);
+                    } catch (e) {
+                        log(
+                            `Error al configurar fuente principal: ${e.message}`
+                        );
+                    }
+
+                    videoElement.addEventListener('error', (e) => {
+                        const error = videoElement.error;
+                        let errorMessage = 'Error desconocido';
+
+                        if (error) {
+                            switch (error.code) {
+                                case 1:
+                                    errorMessage =
+                                        'La operación de carga fue abortada';
+                                    break;
+                                case 2:
+                                    errorMessage = 'Error de red';
+                                    break;
+                                case 3:
+                                    errorMessage = 'Error de decodificación';
+                                    break;
+                                case 4:
+                                    errorMessage = 'Formato no soportado';
+                                    break;
+                            }
+                        }
+
+                        log(`❌ Error en video ${index}: ${errorMessage}`);
+                        log(`URL: ${videoElement.currentSrc || 'No hay URL'}`);
+
+                        if (!videoElement.querySelector('source')) {
+                            const extensions = ['.mp4', '.webm', '.mov'];
+
+                            extensions.forEach((ext) => {
+                                if (fileExtension.toLowerCase() !== ext) {
+                                    const source =
+                                        document.createElement('source');
+                                    source.src = `${basePath}${ext}`;
+                                    source.type = getVideoType(ext);
+                                    videoElement.appendChild(source);
+                                    log(
+                                        `Añadiendo fuente alternativa: ${source.src}`
+                                    );
+                                }
+                            });
+                            videoElement.load();
+                        }
+                    });
+
+                    videoElement.addEventListener('loadedmetadata', () => {
+                        log(
+                            `✅ Video ${index} cargado correctamente. Duración: ${videoElement.duration} segundos`
+                        );
+                        log(`URL cargada: ${videoElement.currentSrc}`);
+                    });
+
+                    videoElement.addEventListener('playing', () => {
+                        log(`▶️ Video ${index} reproduciendo`);
+                        isPlaying = true;
+                        playPauseBtn.innerHTML = '⏸';
+                    });
+
+                    videoElement.addEventListener('pause', () => {
+                        log(`⏸️ Video ${index} pausado`);
+                        isPlaying = false;
+                        playPauseBtn.innerHTML = '▶';
+                    });
+
+                    videoElement.addEventListener('timeupdate', () => {
+                        if (
+                            index === currentVideoIndex &&
+                            videoElement.duration
+                        ) {
+                            const progress =
+                                (videoElement.currentTime /
+                                    videoElement.duration) *
+                                100;
+                            videoProgress.style.width = `${progress}%`;
+                        }
+                    });
+
+                    videoElement.addEventListener('ended', () => {
+                        if (index === currentVideoIndex) {
+                            log(`Video ${index} terminado.`);
+                            if (videos.length > 1) {
+                                nextVideo();
+                            } else {
+                                showWaitingScreen();
+                            }
+                        }
+                    });
+
+                    container.appendChild(videoElement);
+                    videoContainers.appendChild(container);
+                });
+
+                updateVideoInfo();
+
+                setTimeout(() => {
+                    if (videos.length > 0) {
+                        hideWaitingScreen();
+                        showVideo(0);
+                    }
+                }, 500);
+            }
+
+            function getVideoType(extension) {
+                const ext = extension.toLowerCase();
+                if (ext === '.mp4') return 'video/mp4';
+                if (ext === '.webm') return 'video/webm';
+                if (ext === '.mov') return 'video/quicktime';
+                return 'video/mp4';
+            }
+
+            function showVideo(index) {
+                document
+                    .querySelectorAll('.video-container')
+                    .forEach((container) => {
+                        container.classList.remove('active');
+                        const video = container.querySelector('video');
+                        if (video) {
+                            video.pause();
+                        }
+                    });
+
+                currentVideoIndex = index;
+                const container = document.getElementById(
+                    `video-container-${index}`
+                );
+                const video = document.getElementById(`video-${index}`);
+
+                if (!container || !video) {
+                    log(
+                        `❌ No se encontró el video o contenedor con índice ${index}`
+                    );
+                    return;
+                }
+
+                video.currentTime = 0;
+                container.classList.add('active');
+
+                try {
+                    const playPromise = video.play();
+                    if (playPromise !== undefined) {
+                        playPromise
+                            .then(() => {
+                                log(
+                                    `✅ Video ${index} reproducido correctamente`
+                                );
+                                isPlaying = true;
+                                playPauseBtn.innerHTML = '⏸';
+                            })
+                            .catch((error) => {
+                                log(
+                                    `❌ Error al reproducir video ${index}: ${error.message}`
+                                );
+                                isPlaying = false;
+                                playPauseBtn.innerHTML = '▶';
+                                video
+                                    .play()
+                                    .catch((e) =>
+                                        log(`Reintento fallido: ${e.message}`)
+                                    );
+                            });
+                    }
+                } catch (error) {
+                    log(
+                        `❌ Excepción al reproducir video ${index}: ${error.message}`
+                    );
+                }
+
+                updateVideoInfo();
+                resetTimer();
+
+                // Agregar manejo de eventos para reproducir el siguiente video cuando termina
+                video.onended = function () {
+                    log(
+                        `Video ${index} terminado. Reproduciendo siguiente video.`
+                    );
+                    nextVideo();
+                };
+            }
+            function showWaitingScreen() {
+                isWaiting = true;
+                waitingScreen.classList.add('active');
+                resetTimer();
+                const currentVideo = document.getElementById(
+                    `video-${currentVideoIndex}`
+                );
+                if (currentVideo) {
+                    currentVideo.pause();
+                }
+
+                playPauseBtn.innerHTML = '▶';
+                isPlaying = false;
+                progressContainer.classList.add('hidden');
+                videoInfo.classList.add('hidden');
+                controls.classList.add('hidden');
+                log(
+                    'Pantalla de espera activada. Próximo ciclo de videos en ' +
+                        ROTATION_INTERVAL / 1000 +
+                        ' segundos'
+                );
+                updateWaitingCountdown();
+
+                // Después del tiempo de espera, volver a empezar por el primer video
+                setTimeout(() => {
+                    if (isWaiting) {
+                        hideWaitingScreen();
+                        showVideo(0); // Siempre volver al primer video al reiniciar
+                    }
+                }, ROTATION_INTERVAL);
+            }
+            function hideWaitingScreen() {
+                isWaiting = false;
+                waitingScreen.classList.remove('active');
+                progressContainer.classList.remove('hidden');
+                videoInfo.classList.remove('hidden');
+                controls.classList.remove('hidden');
+                log(
+                    'Pantalla de espera desactivada. Preparando reproducción de video.'
+                );
+            }
+
+            function resetTimer() {
+                timeRemaining = ROTATION_INTERVAL;
+                updateTimerDisplay();
+                if (isWaiting) {
+                    updateWaitingCountdown();
+                }
+            }
+
+            function updateWaitingCountdown() {
+                const minutes = Math.floor(timeRemaining / 60000);
+                const seconds = Math.floor((timeRemaining % 60000) / 1000);
+                const timerText = `${minutes
+                    .toString()
+                    .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                waitingCountdown.textContent = timerText;
+                // Solo actualizamos el texto pero NO mostramos el contador
+                // Mantenemos el elemento oculto
+                waitingCountdown.classList.add('hidden');
+
+                // Registramos el tiempo restante en la consola
+                log(`Tiempo restante: ${timerText}`);
+            }
+
+            function formatTime(ms) {
+                const minutes = Math.floor(ms / 60000);
+                const seconds = Math.floor((ms % 60000) / 1000);
+                return `${minutes.toString().padStart(2, '0')}:${seconds
+                    .toString()
+                    .padStart(2, '0')}`;
+            }
+
+            function startRotation() {
+                if (rotationTimer) {
+                    clearInterval(rotationTimer);
+                }
+
+                resetTimer();
+
+                rotationTimer = setInterval(() => {
+                    if (!autoRotate) return;
+
+                    timeRemaining -= 1000;
+
+                    // Solo mostrar en la consola cada 10 segundos o en los últimos 10 segundos
+                    if (timeRemaining % 10000 === 0 || timeRemaining <= 10000) {
+                        log(`Tiempo restante: ${formatTime(timeRemaining)}`);
+                    }
+
+                    if (timeRemaining <= 0) {
+                        if (isWaiting) {
+                            hideWaitingScreen();
+                            if (videos.length > 0) {
+                                showVideo(0);
+                            }
+                        } else {
+                            // Esta parte se activa cuando se cumple el tiempo de rotación
+                            // Mostraremos la pantalla de espera para reiniciar el ciclo
+                            showWaitingScreen();
+                        }
+                        resetTimer();
+                    }
+
+                    updateTimerDisplay();
+                    if (isWaiting) {
+                        updateWaitingCountdown();
+                    }
+                }, 1000);
+
+                log(
+                    'Rotación de videos iniciada. Intervalo: ' +
+                        ROTATION_INTERVAL / 1000 +
+                        ' segundos'
+                );
+            }
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timeRemaining / 60000);
+                const seconds = Math.floor((timeRemaining % 60000) / 1000);
+                const timerText = `${minutes
+                    .toString()
+                    .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                nextVideoTimer.textContent = timerText;
+
+                // Registramos el tiempo en la consola
+                if (timeRemaining % 5000 === 0 || timeRemaining <= 10000) {
+                    log(`Tiempo hasta el próximo cambio: ${timerText}`);
+                }
+            }
+
+            function prevVideo() {
+                if (videos.length <= 1) return;
+                const newIndex =
+                    (currentVideoIndex - 1 + videos.length) % videos.length;
+                log(`Cambiando al video anterior: índice ${newIndex}`);
+                showVideo(newIndex);
+            }
+
+            function nextVideo() {
+                if (videos.length <= 1) return;
+                const newIndex = (currentVideoIndex + 1) % videos.length;
+                log(`Cambiando al siguiente video: índice ${newIndex}`);
+                showVideo(newIndex);
+            }
+
+            function togglePlayPause() {
+                const currentVideo = document.getElementById(
+                    `video-${currentVideoIndex}`
+                );
+                if (!currentVideo) {
+                    log(
+                        '⚠️ No se pudo encontrar el video actual para reproducir/pausar'
+                    );
+                    return;
+                }
+
+                if (isPlaying) {
+                    currentVideo.pause();
+                } else {
+                    const playPromise = currentVideo.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch((error) => {
+                            log(`Error al reproducir: ${error}`);
+                        });
+                    }
+                }
+            }
+
+            function toggleMute() {
+                isMuted = !isMuted;
+                document.querySelectorAll('video').forEach((video) => {
+                    video.muted = isMuted;
+                });
+                muteBtn.innerHTML = isMuted ? '🔇' : '🔊';
+                log(`Sonido ${isMuted ? 'silenciado' : 'activado'}`);
+            }
+
+            function updateVideoInfo() {
+                if (videos.length > 0) {
+                    currentVideoName.textContent =
+                        videos[currentVideoIndex].name ||
+                        `Video ${currentVideoIndex + 1}`;
+                    videoCounter.textContent = `${currentVideoIndex + 1}/${
+                        videos.length
+                    }`;
+                    log(
+                        `Información de video actualizada: ${currentVideoName.textContent}`
+                    );
+                }
+            }
+
+            prevBtn.addEventListener('click', prevVideo);
+            nextBtn.addEventListener('click', nextVideo);
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            muteBtn.addEventListener('click', toggleMute);
+
+            log('Script de advertising cargado. Esperando conexión...');
+        </script>
+    </body>
+</html>
