@@ -1,4 +1,4 @@
-# TikTok Decision Maker
+# Herramientas para TikTok Streamers
 
 ![TikTok Decision Maker](https://img.shields.io/badge/TikTok-Decision%20Maker-ff2d55)
 ![Versión](https://img.shields.io/badge/versión-1.0.0-blue)
